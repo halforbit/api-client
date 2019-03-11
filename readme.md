@@ -121,13 +121,13 @@ var bytes = response.ByteContent();
 
 var jsonAsClass = response.JsonContent<Person>();
 
-var jsonAsJToken = response.JTokenContent();
+var jsonAsJToken = response.JsonContent();
 
 // Map a JToken (usually a JObject or JArray) to a type.
-var mappedJToken = response.MapJToken(j => new Person(j["name"]));
+var mappedJToken = response.MapJsonContent(j => new Person(j["name"]));
 
 // Map an array of JTokens to an IReadOnlyList<> of your favorite type.
-var mappedJArray = response.MapJArray(j => new Person(j["name"]));
+var mappedJArray = response.MapJsonArrayContent(j => new Person(j["name"]));
 ```
 
 ## Authentication
@@ -172,7 +172,7 @@ public class MyAuthenticationClient
                 ("username", "probably_dont"),
                 ("password", "hardcode_this"))
             .Post("token"))
-            .MapJToken(j => new AuthenticationToken(
+            .MapJsonContent(j => new AuthenticationToken(
                 content: (string)j["access_token"],
                 expireTime: DateTime.UtcNow.AddSeconds((int)j["expires_in"])));
     }

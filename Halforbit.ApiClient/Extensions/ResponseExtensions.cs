@@ -58,24 +58,24 @@ namespace Halforbit.ApiClient
             return encoding.GetString(response.Content.AsByteArray());
         }
 
+        public static JToken JsonContent(this Response response)
+        {
+            return response.JsonContent<JToken>();
+        }
+
         public static TValue JsonContent<TValue>(this Response response)
         {
             return JsonConvert.DeserializeObject<TValue>(response.TextContent());
         }
 
-        public static JToken JTokenContent(this Response response)
-        {
-            return JToken.Parse(response.TextContent());
-        }
-
-        public static TResult MapJToken<TResult>(
+        public static TResult MapJsonContent<TResult>(
             this Response response,
-            Func<JObject, TResult> map)
+            Func<JToken, TResult> map)
         {
-            return map(response.JsonContent<JObject>());
+            return map(response.JsonContent<JToken>());
         }
 
-        public static IReadOnlyList<TResult> MapJArray<TResult>(
+        public static IReadOnlyList<TResult> MapJsonArrayContent<TResult>(
             this Response response,
             Func<JToken, TResult> map)
         {
