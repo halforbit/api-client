@@ -87,10 +87,9 @@ var request = Request.Create($"https://alfa.bravo/{accountId}");
 Route values, query string values, and headers can be specified using a single value, tuple values, or a dictionary of values:
 
 ```csharp
-// This will have a query string of:
-// ?alfa=bravo&charlie=delta&echo=foxtrot&golf=hotel
-
-var request = Request.Create()
+// This will have a query string of: 
+//   ?alfa=bravo&charlie=delta&echo=foxtrot&golf=hotel
+request
     .QueryValue("alfa", "bravo")
     .QueryValues(("charlie", "delta"), ("echo", "foxtrot"))
     .QueryValues(new Dictionary<string, string> { ["golf"] = "hotel" })
@@ -102,14 +101,14 @@ Several methods are provided to easily specify request bodies of various kinds:
 
 ```csharp
 // Plain text body.
-var request = Request.Create().TextBody("hello, world!");
+request.TextBody("hello, world!");
 
 // JSON body. This can be any JSON-serializable object, including classes, 
 // anonymous objects, JObject, etc.
-var request = Request.Create().JsonBody(new { Name = "John Doe" });
+request.JsonBody(new { Name = "John Doe" });
 
 // Form body. This can be tuple values or a dictionary of values.
-var request = Request.Create().FormBody(("first_name", "John"), ("last_name", "Doe"));
+request.FormBody(("first_name", "John"), ("last_name", "Doe"));
 ```
 
 ## Handling Responses
@@ -137,7 +136,7 @@ Several authentication strategies are supported.
 ### Basic Authentication
 
 ```csharp
-var request = Request.Create().BasicAuthentication(
+request.BasicAuthentication(
     username: "probably_dont",
     password: "hardcode_this");
 ```
@@ -147,7 +146,7 @@ var request = Request.Create().BasicAuthentication(
 You can specify a lambda for retrieving a bearer token. This lambda should produce an `IAuthenticationToken`:
 
 ```csharp
-var request = Request.Create().BearerTokenAuthentication(
+request.BearerTokenAuthentication(
     async () => await _myAuthenticationClient.Authenticate());
 ```
 
@@ -184,7 +183,7 @@ public class MyAuthenticationClient
 Cookie authentication is similar to bearer token authentication. Just provide a lambda to retrieve the cookie when it is needed:
 
 ```csharp
-var request = Request.Create().CookieAuthentication(
+request.CookieAuthentication(
     async () => await _myAuthenticationClient.Authenticate());
 ```
 
@@ -193,7 +192,7 @@ var request = Request.Create().CookieAuthentication(
 You can opt in to automatic retry by specifying the maximum number of times a transient failure should be retried:
 
 ```csharp
-var request = Request.Create().Retry(retryCount: 5);
+request.Retry(retryCount: 5);
 ```
 
 The first retry will be immediate, and the interval between subsequent retries is exponential, e.g. 1 sec, 2 sec, 4 sec, 8 sec, etc.
