@@ -1,6 +1,12 @@
 ﻿# Halforbit API Client
 
+
 An easy to use library for making requests over HTTP.
+
+Available on NuGet: [Halforbit.ApiClient](https://www.nuget.org/packages/Halforbit.ApiClient)
+
+[![Build status](https://ci.appveyor.com/api/projects/status/r96ru6eh9rk9s7n4?svg=true)](https://ci.appveyor.com/project/halforbit/api-client)
+
 
 ## Features
 
