@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace Halforbit.ApiClient.Implementation
+namespace Halforbit.ApiClient
 {
     public class RequestClient : IRequestClient
     {
