@@ -2,7 +2,6 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <!--<TargetFrameworks>net462;netcoreapp2.2</TargetFrameworks>-->
     <LangVersion>latest</LangVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <Version>1.0.1</Version>
@@ -12,14 +11,11 @@
     <RepositoryUrl>https://github.com/halforbit/api-client</RepositoryUrl>
   </PropertyGroup>
 
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'net462'">
-    <DefineConstants>NETFULL</DefineConstants>
+  <PropertyGroup>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>    
   </PropertyGroup>
-
-  <PropertyGroup Condition=" '$(TargetFramework)' == 'netcoreapp2.2'">
-    <DefineConstants>NETFULL</DefineConstants>
-  </PropertyGroup>
-
+  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
     <WarningsAsErrors></WarningsAsErrors>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>

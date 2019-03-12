@@ -76,7 +76,7 @@ namespace Halforbit.ApiClient
         public TimeSpan Timeout { get; }
 
         public static Request Default => new Request(
-            requestClient: Implementation.RequestClient.Instance,
+            requestClient: Halforbit.ApiClient.RequestClient.Instance,
             authenticationStrategy: default,
             retryStrategy: default,
             baseUrl: default,
