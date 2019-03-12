@@ -30,6 +30,40 @@ namespace Halforbit.ApiClient.Tests
         }
 
         [Fact, Trait("Type", "Integration")]
+        public async Task ListUsers_BearerToken()
+        {
+            var authenticationCalled = false;
+
+            async Task<IAuthenticationToken> Authenticate()
+            {
+                await Task.Delay(0);
+
+                authenticationCalled = true;
+
+                return new AuthenticationToken(string.Empty, DateTime.UtcNow.AddDays(1));
+            }
+
+
+            var response = await _request
+                .BearerTokenAuthentication(Authenticate)
+                .Get("users");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json", response.ContentType.MediaType);
+
+            Assert.Equal("utf-8", response.ContentType.CharSet);
+
+            var result = response.JsonContent<JObject>();
+
+            Assert.Equal(
+                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                JsonConvert.SerializeObject(result));
+
+            Assert.True(authenticationCalled);
+        }
+
+        [Fact, Trait("Type", "Integration")]
         public async Task SingleUser()
         {
             var response = await _request

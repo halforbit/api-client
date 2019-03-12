@@ -23,7 +23,7 @@ namespace Halforbit.ApiClient
 
         public async Task<Request> Apply(Request request)
         {
-            var expireTime = _authenticationToken.ExpireTime;
+            var expireTime = _authenticationToken?.ExpireTime;
 
             if (_authenticationToken == null || 
                 (expireTime.HasValue && expireTime.Value < DateTime.UtcNow))
