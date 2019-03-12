@@ -44,7 +44,7 @@ namespace Halforbit.ApiClient.Tests
 
                 authenticationCalled = true;
 
-                return new AuthenticationToken(string.Empty, DateTime.UtcNow.AddDays(1));
+                return new AuthenticationToken("abc123", DateTime.UtcNow.AddDays(1));
             }
 
             var response = await _request
@@ -66,6 +66,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.True(authenticationCalled);
 
             Assert.Equal(
+                "Bearer abc123",
+                response.Request.Headers["Authentication"]);
+
+            Assert.Equal(
                 "https://reqres.in/api/users",
                 response.RequestedUrl);
         }
@@ -81,7 +85,7 @@ namespace Halforbit.ApiClient.Tests
 
                 authenticationCalled = true;
 
-                return new AuthenticationToken(string.Empty, DateTime.UtcNow.AddDays(1));
+                return new AuthenticationToken("abc123", DateTime.UtcNow.AddDays(1));
             }
 
             var response = await _request
@@ -101,6 +105,10 @@ namespace Halforbit.ApiClient.Tests
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authenticationCalled);
+
+            Assert.Equal(
+                "abc123",
+                response.Request.Headers["Cookie"]);
 
             Assert.Equal(
                 "https://reqres.in/api/users",
