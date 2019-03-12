@@ -31,7 +31,7 @@ namespace Halforbit.ApiClient
                 _authenticationToken = await _getAuthenticationToken();
             }
 
-            return request.Header("Authentication", $"Bearer {_authenticationToken.Content}");
+            return request.Header("Authorization", $"Bearer {_authenticationToken.Content}");
         }
 
         public async Task Reauthenticate()

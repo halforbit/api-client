@@ -67,7 +67,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal(
                 "Bearer abc123",
-                response.Request.Headers["Authentication"]);
+                response.Request.Headers["Authorization"]);
 
             Assert.Equal(
                 "https://reqres.in/api/users",
