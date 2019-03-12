@@ -114,6 +114,7 @@ namespace Halforbit.ApiClient
                                 isSuccess: false,
                                 errorMessage: "Timed out while making request",
                                 exception: default,
+                                request: request,
                                 requestedUrl: requestUrl);
                         }
                     }
@@ -133,6 +134,7 @@ namespace Halforbit.ApiClient
                         isSuccess: false,
                         errorMessage: ex.Message,
                         exception: ex,
+                        request: request,
                         requestedUrl: requestUrl);
                 }
 
@@ -191,6 +193,7 @@ namespace Halforbit.ApiClient
                         (int)httpResponseMessage.StatusCode < 300,
                     errorMessage: null,
                     exception: null,
+                    request: request,
                     requestedUrl: requestUrl);
             }
         }
