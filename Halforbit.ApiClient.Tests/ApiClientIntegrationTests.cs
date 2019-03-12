@@ -27,6 +27,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -42,7 +46,6 @@ namespace Halforbit.ApiClient.Tests
 
                 return new AuthenticationToken(string.Empty, DateTime.UtcNow.AddDays(1));
             }
-
 
             var response = await _request
                 .BearerTokenAuthentication(Authenticate)
@@ -61,6 +64,47 @@ namespace Halforbit.ApiClient.Tests
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authenticationCalled);
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task ListUsers_Cookie()
+        {
+            var authenticationCalled = false;
+
+            async Task<IAuthenticationToken> Authenticate()
+            {
+                await Task.Delay(0);
+
+                authenticationCalled = true;
+
+                return new AuthenticationToken(string.Empty, DateTime.UtcNow.AddDays(1));
+            }
+
+            var response = await _request
+                .CookieAuthentication(Authenticate)
+                .Get("users");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json", response.ContentType.MediaType);
+
+            Assert.Equal("utf-8", response.ContentType.CharSet);
+
+            var result = response.JsonContent<JObject>();
+
+            Assert.Equal(
+                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                JsonConvert.SerializeObject(result));
+
+            Assert.True(authenticationCalled);
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -81,6 +125,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal(
                 @"{""data"":{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""}}",
                 JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users/2",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -91,6 +139,10 @@ namespace Halforbit.ApiClient.Tests
                 .Get("users/{UserId}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+
+            Assert.Equal(
+                "https://reqres.in/api/users/23",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -116,6 +168,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""leader"",""id"":""",
                 JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -142,6 +198,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""zion resident"",""updatedAt"":""",
                 JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users/2",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -168,6 +228,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""zion resident"",""updatedAt"":""",
                 JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users/2",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -182,6 +246,10 @@ namespace Halforbit.ApiClient.Tests
                 response.StatusCode);
 
             Assert.Null(response.ContentType);
+
+            Assert.Equal(
+                "https://reqres.in/api/users/2",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -196,6 +264,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal("image/jpeg", response.ContentType.MediaType);
 
             Assert.Equal(3468, response.Content.Count);
+
+            Assert.Equal(
+                "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -214,6 +286,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.False(string.IsNullOrWhiteSpace(response.ErrorMessage));
 
             Assert.NotNull(response.Exception);
+
+            Assert.Equal(
+                "https://doesnt.exist/something/somewhere",
+                response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
@@ -233,6 +309,10 @@ namespace Halforbit.ApiClient.Tests
             Assert.False(string.IsNullOrWhiteSpace(response.ErrorMessage));
 
             Assert.Null(response.Exception);
+
+            Assert.Equal(
+                "https://doesnt.exist/something/somewhere",
+                response.RequestedUrl);
         }
     }
 }

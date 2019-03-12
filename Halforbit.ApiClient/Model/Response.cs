@@ -14,7 +14,8 @@ namespace Halforbit.ApiClient
             string contentEncoding,
             bool isSuccess,
             string errorMessage,
-            Exception exception)
+            Exception exception,
+            string requestedUrl)
         {
             StatusCode = statusCode;
 
@@ -31,6 +32,8 @@ namespace Halforbit.ApiClient
             ErrorMessage = errorMessage;
 
             Exception = exception;
+
+            RequestedUrl = requestedUrl;
         }
 
         public HttpStatusCode StatusCode { get; }
@@ -48,5 +51,7 @@ namespace Halforbit.ApiClient
         public string ErrorMessage { get; }
 
         public Exception Exception { get; }
+
+        public string RequestedUrl { get; }
     }
 }

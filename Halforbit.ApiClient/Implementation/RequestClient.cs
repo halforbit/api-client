@@ -113,7 +113,8 @@ namespace Halforbit.ApiClient
                                 contentEncoding: default,
                                 isSuccess: false,
                                 errorMessage: "Timed out while making request",
-                                exception: default);
+                                exception: default,
+                                requestedUrl: requestUrl);
                         }
                     }
                     else
@@ -131,7 +132,8 @@ namespace Halforbit.ApiClient
                         contentEncoding: default,
                         isSuccess: false,
                         errorMessage: ex.Message,
-                        exception: ex);
+                        exception: ex,
+                        requestedUrl: requestUrl);
                 }
 
                 if (request.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
@@ -188,7 +190,8 @@ namespace Halforbit.ApiClient
                         (int)httpResponseMessage.StatusCode >= 200 &&
                         (int)httpResponseMessage.StatusCode < 300,
                     errorMessage: null,
-                    exception: null);
+                    exception: null,
+                    requestedUrl: requestUrl);
             }
         }
     }
