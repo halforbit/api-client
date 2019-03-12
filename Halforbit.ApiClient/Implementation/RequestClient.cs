@@ -56,6 +56,14 @@ namespace Halforbit.ApiClient
                     method: new HttpMethod(request.Method),
                     requestUri: requestUrl);
 
+                if(request.Headers.Count > 0)
+                {
+                    foreach(var kv in request.Headers)
+                    {
+                        httpRequestMessage.Headers.Add(kv.Key, kv.Value);
+                    }
+                }
+
                 if (request.Content != null)
                 {
                     var content = new ByteArrayContent(request.Content.AsByteArray());
