@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -9,7 +10,10 @@ namespace Halforbit.ApiClient
 {
     public class RequestClient : IRequestClient
     {
-        static readonly HttpClient _httpClient = new HttpClient
+        static readonly HttpClient _httpClient = new HttpClient(new HttpClientHandler
+            {
+                AllowAutoRedirect = false
+            })
         {
             Timeout = Timeout.InfiniteTimeSpan
         };
@@ -51,6 +55,15 @@ namespace Halforbit.ApiClient
 
                     requestUrl = $"{requestUrl}?{query}";
                 }
+
+                var (newRequest, newRequestUrl) = await ApplyBeforeRequestHandlers(
+                    request.BeforeRequestHandlers, 
+                    request, 
+                    requestUrl);
+
+                request = newRequest;
+
+                requestUrl = newRequestUrl;
 
                 var httpRequestMessage = new HttpRequestMessage(
                     method: new HttpMethod(request.Method),
@@ -113,17 +126,21 @@ namespace Halforbit.ApiClient
                         }
                         else
                         {
-                            return new Response(
-                                statusCode: default,
-                                headers: default,
-                                content: default,
-                                contentType: default,
-                                contentEncoding: default,
-                                isSuccess: false,
-                                errorMessage: "Timed out while making request",
-                                exception: default,
-                                request: request,
-                                requestedUrl: requestUrl);
+                            return await ApplyAfterResponseHandlers(
+                                request.AfterResponseHandlers, 
+                                request, 
+                                requestUrl,
+                                new Response(
+                                    statusCode: default,
+                                    headers: default,
+                                    content: default,
+                                    contentType: default,
+                                    contentEncoding: default,
+                                    isSuccess: false,
+                                    errorMessage: "Timed out while making request",
+                                    exception: default,
+                                    request: request,
+                                    requestedUrl: requestUrl));
                         }
                     }
                     else
@@ -133,17 +150,21 @@ namespace Halforbit.ApiClient
                 }
                 catch(Exception ex)
                 {
-                    return new Response(
-                        statusCode: default,
-                        headers: default,
-                        content: default,
-                        contentType: default,
-                        contentEncoding: default,
-                        isSuccess: false,
-                        errorMessage: ex.Message,
-                        exception: ex,
-                        request: request,
-                        requestedUrl: requestUrl);
+                    return await ApplyAfterResponseHandlers(
+                        request.AfterResponseHandlers,
+                        request,
+                        requestUrl,
+                        new Response(
+                            statusCode: default,
+                            headers: default,
+                            content: default,
+                            contentType: default,
+                            contentEncoding: default,
+                            isSuccess: false,
+                            errorMessage: ex.Message,
+                            exception: ex,
+                            request: request,
+                            requestedUrl: requestUrl));
                 }
 
                 if (request.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
@@ -184,26 +205,67 @@ namespace Halforbit.ApiClient
 
                 var contentBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync();
 
-                return new Response(
-                    statusCode: httpResponseMessage.StatusCode,
-                    headers: httpResponseMessage.Headers.ToDictionary(
-                        kv => kv.Key,
-                        kv => kv.Value.First()),
-                    content: contentBytes,
-                    contentType: contentType == null ? null : new ContentType(
-                        boundary: contentType.Boundary,
-                        charSet: contentType.CharSet,
-                        mediaType: contentType.MediaType,
-                        name: contentType.Name),
-                    contentEncoding: null,
-                    isSuccess: 
-                        (int)httpResponseMessage.StatusCode >= 200 &&
-                        (int)httpResponseMessage.StatusCode < 300,
-                    errorMessage: null,
-                    exception: null,
-                    request: request,
-                    requestedUrl: requestUrl);
+                return await ApplyAfterResponseHandlers(
+                    request.AfterResponseHandlers,
+                    request,
+                    requestUrl,
+                    new Response(
+                        statusCode: httpResponseMessage.StatusCode,
+                        headers: httpResponseMessage.Headers.ToDictionary(
+                            kv => kv.Key,
+                            kv => kv.Value.First()),
+                        content: contentBytes,
+                        contentType: contentType == null ? null : new ContentType(
+                            boundary: contentType.Boundary,
+                            charSet: contentType.CharSet,
+                            mediaType: contentType.MediaType,
+                            name: contentType.Name),
+                        contentEncoding: null,
+                        isSuccess: 
+                            (int)httpResponseMessage.StatusCode >= 200 &&
+                            (int)httpResponseMessage.StatusCode < 300,
+                        errorMessage: null,
+                        exception: null,
+                        request: request,
+                        requestedUrl: requestUrl));
             }
+        }
+
+        static async Task<(Request Request, string RequestUrl)> ApplyBeforeRequestHandlers(
+            IReadOnlyList<Request.BeforeRequestDelegate> handlers,
+            Request request,
+            string requestUrl)
+        {
+            var count = handlers.Count;
+
+            if (count > 0)
+            {
+                for (var i = 0; i < count; i++)
+                {
+                    (request, requestUrl) = await handlers[i](request, requestUrl);
+                }
+            }
+
+            return (request, requestUrl);
+        }
+
+        static async Task<Response> ApplyAfterResponseHandlers(
+            IReadOnlyList<Request.AfterResponseDelegate> handlers,
+            Request request,
+            string requestUrl,
+            Response response)
+        {
+            var count = handlers.Count;
+
+            if (count > 0)
+            {
+                for(var i = 0; i < count; i++)
+                {
+                    response = await handlers[i](request, requestUrl, response);
+                }
+            }
+
+            return response;
         }
     }
 }

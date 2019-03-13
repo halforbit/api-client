@@ -9,6 +9,26 @@ namespace Halforbit.ApiClient.Tests
     {
         static readonly Encoding _utf8Encoding = new UTF8Encoding(false);
 
+        // Properties /////////////////////////////////////////////////////////
+
+        [Fact, Trait("Type", "Unit")]
+        public void RequestName()
+        {
+            var request = default(Request).Name("Alfa");
+
+            Assert.Equal("Alfa", request.Name);
+        }
+
+        [Fact, Trait("Type", "Unit")]
+        public void RequestBaseUrl()
+        {
+            var request = default(Request).BaseUrl("Alfa");
+
+            Assert.Equal("Alfa", request.BaseUrl);
+        }
+
+        // Methods ////////////////////////////////////////////////////////////
+
         [Fact, Trait("Type", "Unit")]
         public void RequestGet()
         {
@@ -18,7 +38,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("alfa", request.Resource);
         }
-
+        
         [Fact, Trait("Type", "Unit")]
         public void RequestPost()
         {
@@ -49,6 +69,8 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal("alfa", request.Resource);
         }
 
+        // Strategy ///////////////////////////////////////////////////////////
+
         [Fact, Trait("Type", "Unit")]
         public void RequestBasicAuthentication()
         {
@@ -74,6 +96,8 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.True(request.AuthenticationStrategy is CookieAuthenticationStrategy);
         }
+
+        // Routes /////////////////////////////////////////////////////////////
 
         [Fact, Trait("Type", "Unit")]
         public void RequestWithRouteValue()
@@ -147,6 +171,8 @@ namespace Halforbit.ApiClient.Tests
                 request.RouteValues);
         }
 
+        // Query //////////////////////////////////////////////////////////////
+
         [Fact, Trait("Type", "Unit")]
         public void RequestWithQueryValue()
         {
@@ -217,6 +243,8 @@ namespace Halforbit.ApiClient.Tests
                 request.QueryValues);
         }
 
+        // Headers ////////////////////////////////////////////////////////////
+
         [Fact, Trait("Type", "Unit")]
         public void RequestWithHeader()
         {
@@ -286,6 +314,8 @@ namespace Halforbit.ApiClient.Tests
                 },
                 request.Headers);
         }
+
+        // Body ///////////////////////////////////////////////////////////////
 
         [Fact, Trait("Type", "Unit")]
         public void RequestWithTextBody()

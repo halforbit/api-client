@@ -1,9 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
-    public partial class Request
+    public class Request
     {
         static readonly IReadOnlyDictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
 
@@ -11,6 +12,9 @@ namespace Halforbit.ApiClient
             IRequestClient requestClient,
             IAuthenticationStrategy authenticationStrategy,
             IRetryStrategy retryStrategy,
+            IReadOnlyList<BeforeRequestDelegate> beforeRequestHandlers,
+            IReadOnlyList<AfterResponseDelegate> afterResponseHandlers,
+            string name,
             string baseUrl,
             string method,
             string resource,
@@ -27,6 +31,12 @@ namespace Halforbit.ApiClient
             AuthenticationStrategy = authenticationStrategy;
 
             RetryStrategy = retryStrategy;
+
+            BeforeRequestHandlers = beforeRequestHandlers;
+
+            AfterResponseHandlers = afterResponseHandlers;
+
+            Name = name;
 
             BaseUrl = baseUrl;
 
@@ -55,6 +65,12 @@ namespace Halforbit.ApiClient
 
         public IRetryStrategy RetryStrategy { get; }
 
+        public IReadOnlyList<BeforeRequestDelegate> BeforeRequestHandlers { get; }
+
+        public IReadOnlyList<AfterResponseDelegate> AfterResponseHandlers { get; }
+
+        public string Name { get; }
+
         public string BaseUrl { get; }
 
         public string Method { get; }
@@ -79,6 +95,9 @@ namespace Halforbit.ApiClient
             requestClient: Halforbit.ApiClient.RequestClient.Instance,
             authenticationStrategy: default,
             retryStrategy: default,
+            beforeRequestHandlers: new List<BeforeRequestDelegate>(0),
+            afterResponseHandlers: new List<AfterResponseDelegate>(0),
+            name: default,
             baseUrl: default,
             method: default,
             resource: default,
@@ -100,6 +119,9 @@ namespace Halforbit.ApiClient
                 requestClient: requestClient ?? source.RequestClient,
                 authenticationStrategy: source.AuthenticationStrategy,
                 retryStrategy: source.RetryStrategy,
+                beforeRequestHandlers: source.BeforeRequestHandlers,
+                afterResponseHandlers: source.AfterResponseHandlers,
+                name: source.Name,
                 baseUrl: baseUrl ?? source.BaseUrl,
                 method: source.Method,
                 resource: source.Resource,
@@ -111,5 +133,14 @@ namespace Halforbit.ApiClient
                 contentEncoding: source.ContentEncoding,
                 timeout: source.Timeout);
         }
+
+        public delegate Task<(Request request, string requestUrl)> BeforeRequestDelegate(
+            Request request,
+            string requestUrl);
+
+        public delegate Task<Response> AfterResponseDelegate(
+            Request request,
+            string requestUrl,
+            Response response);
     }
 }

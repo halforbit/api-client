@@ -116,6 +116,78 @@ namespace Halforbit.ApiClient.Tests
         }
 
         [Fact, Trait("Type", "Integration")]
+        public async Task ListUsers_BeforeRequestHandler()
+        {
+            var handlerCalled = false;
+
+            var response = await _request
+                .BeforeRequest((q, u) =>
+                {
+                    Assert.Equal("users", q.Resource);
+
+                    handlerCalled = true;
+
+                    return Task.FromResult((q, u));
+                })
+                .Get("users");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json", response.ContentType.MediaType);
+
+            Assert.Equal("utf-8", response.ContentType.CharSet);
+
+            var result = response.JsonContent<JObject>();
+
+            Assert.Equal(
+                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
+
+            Assert.True(handlerCalled);
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task ListUsers_AfterResponseHandler()
+        {
+            var handlerCalled = false;
+
+            var response = await _request
+                .AfterResponse((q, u, r) =>
+                {
+                    Assert.Equal("users", q.Resource);
+
+                    Assert.Equal(HttpStatusCode.OK, r.StatusCode);
+
+                    handlerCalled = true;
+
+                    return Task.FromResult(r);
+                })
+                .Get("users");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json", response.ContentType.MediaType);
+
+            Assert.Equal("utf-8", response.ContentType.CharSet);
+
+            var result = response.JsonContent<JObject>();
+
+            Assert.Equal(
+                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
+
+            Assert.True(handlerCalled);
+        }
+
+        [Fact, Trait("Type", "Integration")]
         public async Task SingleUser()
         {
             var response = await _request
