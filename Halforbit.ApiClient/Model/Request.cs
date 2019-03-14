@@ -21,7 +21,7 @@ namespace Halforbit.ApiClient
             IReadOnlyDictionary<string, string> headers,
             IReadOnlyDictionary<string, string> routeValues,
             IReadOnlyDictionary<string, string> queryValues,
-            IReadOnlyList<byte> content,
+            IContent content,
             string contentType,
             string contentEncoding,
             TimeSpan timeout)
@@ -83,7 +83,7 @@ namespace Halforbit.ApiClient
 
         public IReadOnlyDictionary<string, string> QueryValues { get; }
 
-        public IReadOnlyList<byte> Content { get; }
+        public IContent Content { get; }
 
         public string ContentType { get; }
 

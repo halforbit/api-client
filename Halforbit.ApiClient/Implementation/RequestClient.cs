@@ -79,11 +79,11 @@ namespace Halforbit.ApiClient
 
                 if (request.Content != null)
                 {
-                    var content = new ByteArrayContent(request.Content.AsByteArray());
+                    var requestContent = new StreamContent(request.Content.GetStream());
 
-                    content.Headers.Add("Content-Type", request.ContentType);
+                    requestContent.Headers.Add("Content-Type", request.ContentType);
 
-                    httpRequestMessage.Content = content;
+                    httpRequestMessage.Content = requestContent;
                 }
 
                 var httpResponseMessage = default(HttpResponseMessage);
@@ -100,6 +100,7 @@ namespace Halforbit.ApiClient
 
                     var sendTask = _httpClient.SendAsync(
                         httpRequestMessage, 
+                        HttpCompletionOption.ResponseHeadersRead,
                         cancellationTokenSource.Token);
 
                     var finishedTask = await Task.WhenAny(sendTask, timeoutTask);
@@ -167,6 +168,8 @@ namespace Halforbit.ApiClient
                             requestedUrl: requestUrl));
                 }
 
+                var s = await httpResponseMessage.Content.ReadAsStreamAsync();
+
                 if (request.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
                     reauthorizeRetriesRemaining > 0)
                 {
@@ -203,7 +206,7 @@ namespace Halforbit.ApiClient
                     new System.Net.Mime.ContentType(contentTypeValue) :
                     null;
 
-                var contentBytes = await httpResponseMessage.Content.ReadAsByteArrayAsync();
+                var responseContent = new StreamedContent(await httpResponseMessage.Content.ReadAsStreamAsync());
 
                 return await ApplyAfterResponseHandlers(
                     request.AfterResponseHandlers,
@@ -214,7 +217,7 @@ namespace Halforbit.ApiClient
                         headers: httpResponseMessage.Headers.ToDictionary(
                             kv => kv.Key,
                             kv => kv.Value.First()),
-                        content: contentBytes,
+                        content: responseContent,
                         contentType: contentType == null ? null : new ContentType(
                             boundary: contentType.Boundary,
                             charSet: contentType.CharSet,

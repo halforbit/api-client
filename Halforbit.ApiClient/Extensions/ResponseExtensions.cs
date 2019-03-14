@@ -17,13 +17,23 @@ namespace Halforbit.ApiClient
         public static byte[] ByteContent(
             this Response response)
         {
-            return response.Content.AsByteArray();
+            if(response.Content is BufferedContent bufferedContent)
+            {
+                return bufferedContent.Bytes;
+            }
+
+            using (var ms = new MemoryStream())
+            {
+                response.Content.GetStream().CopyTo(ms);
+
+                return ms.ToArray();
+            }
         }
 
         public static Stream StreamContent(
             this Response response)
         {
-            return new MemoryStream(response.Content.AsByteArray());
+            return response.Content.GetStream();
         }
 
         public static string TextContent(
@@ -55,7 +65,10 @@ namespace Halforbit.ApiClient
                 }
             }
 
-            return encoding.GetString(response.Content.AsByteArray());
+            using (var sr = new StreamReader(response.Content.GetStream(), encoding))
+            {
+                return sr.ReadToEnd();
+            }
         }
 
         public static JToken JsonContent(this Response response)

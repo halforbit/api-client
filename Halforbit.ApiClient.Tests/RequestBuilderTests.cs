@@ -1,5 +1,6 @@
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Xunit;
 
@@ -326,7 +327,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal(
                 new UTF8Encoding(false).GetBytes("hello, world!"),
-                request.Content);
+                ReadFully(request.Content.GetStream()));
 
             Assert.Equal(
                 "text/special; charset=utf-8",
@@ -351,7 +352,17 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal(
                 _utf8Encoding.GetBytes(JsonConvert.SerializeObject(body)),
-                request.Content);
+                ReadFully(request.Content.GetStream()));
+        }
+
+        static byte[] ReadFully(Stream input)
+        {
+            using (var ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+
+                return ms.ToArray();
+            }
         }
     }
 }

@@ -677,7 +677,7 @@ namespace Halforbit.ApiClient
                 headers: request.Headers,
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
-                content: _utf8Encoding.GetBytes(body),
+                content: new BufferedContent(_utf8Encoding.GetBytes(body)),
                 contentType: $"{mediaType}; charset=utf-8",
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout);
@@ -702,7 +702,7 @@ namespace Halforbit.ApiClient
                 headers: request.Headers,
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
-                content: _utf8Encoding.GetBytes(JsonConvert.SerializeObject(body)),
+                content: new BufferedContent(_utf8Encoding.GetBytes(JsonConvert.SerializeObject(body))),
                 contentType: $"application/json; charset=utf-8",
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout);
@@ -727,8 +727,8 @@ namespace Halforbit.ApiClient
                 headers: request.Headers,
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
-                content: _utf8Encoding.GetBytes(
-                    new FormUrlEncodedContent(formValues).ReadAsStringAsync().Result),
+                content: new BufferedContent(_utf8Encoding.GetBytes(
+                    new FormUrlEncodedContent(formValues).ReadAsStringAsync().Result)),
                 contentType: $"application/x-www-form-urlencoded; charset=utf-8",
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout);

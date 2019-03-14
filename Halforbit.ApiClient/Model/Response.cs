@@ -9,7 +9,7 @@ namespace Halforbit.ApiClient
         public Response(
             HttpStatusCode statusCode,
             IReadOnlyDictionary<string, string> headers,
-            IReadOnlyList<byte> content,
+            IContent content,
             ContentType contentType,
             string contentEncoding,
             bool isSuccess,
@@ -43,7 +43,7 @@ namespace Halforbit.ApiClient
 
         public IReadOnlyDictionary<string, string> Headers { get; }
 
-        public IReadOnlyList<byte> Content { get; }
+        public IContent Content { get; }
 
         public ContentType ContentType { get; }
 

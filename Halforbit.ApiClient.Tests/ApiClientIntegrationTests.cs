@@ -343,7 +343,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("image/jpeg", response.ContentType.MediaType);
 
-            Assert.Equal(3468, response.Content.Count);
+            Assert.Equal(3468, response.ByteContent().Length);
 
             Assert.Equal(
                 "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg",
