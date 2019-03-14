@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,6 +24,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: new BasicAuthenticationStrategy(username, password),
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -49,6 +51,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: new BearerTokenAuthenticationStrategy(getBearerToken),
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -74,6 +78,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: new CookieAuthenticationStrategy(getCookie),
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -102,6 +108,8 @@ namespace Halforbit.ApiClient
                 retryStrategy: new ExponentialBackoffRetryStrategy(
                     retryCount,
                     retryOnTimeout),
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -121,10 +129,14 @@ namespace Halforbit.ApiClient
             this Request request,
             Func<Request, string, Task<(Request, string)>> handler)
         {
+            request = request ?? Request.Default;
+
             return new Request(
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers
                     .With(new Request.BeforeRequestDelegate(handler)),
                 afterResponseHandlers: request.AfterResponseHandlers,
@@ -145,13 +157,69 @@ namespace Halforbit.ApiClient
             this Request request,
             Func<Request, string, Response, Task<Response>> handler)
         {
+            request = request ?? Request.Default;
+
             return new Request(
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers
-                .With(new Request.AfterResponseDelegate(handler)),
+                    .With(new Request.AfterResponseDelegate(handler)),
+                name: request.Name,
+                baseUrl: request.BaseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: request.Content,
+                contentType: request.ContentType,
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout);
+        }
+
+        public static Request JsonRequestSerialization(
+            this Request request)
+        {
+            request = request ?? Request.Default;
+
+            return new Request(
+                requestClient: request.RequestClient,
+                authenticationStrategy: request.AuthenticationStrategy,
+                retryStrategy: request.RetryStrategy,
+                requestSerializer: JsonSerializer.Instance,
+                responseDeserializer: request.ResponseDeserializer,
+                beforeRequestHandlers: request.BeforeRequestHandlers,
+                afterResponseHandlers: request.AfterResponseHandlers,
+                name: request.Name,
+                baseUrl: request.BaseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: request.Content,
+                contentType: request.ContentType,
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout);
+        }
+
+        public static Request JsonResponseSerialization(
+            this Request request)
+        {
+            request = request ?? Request.Default;
+
+            return new Request(
+                requestClient: request.RequestClient,
+                authenticationStrategy: request.AuthenticationStrategy,
+                retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: JsonDeserializer.Instance,
+                beforeRequestHandlers: request.BeforeRequestHandlers,
+                afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
                 baseUrl: request.BaseUrl,
                 method: request.Method,
@@ -177,6 +245,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: name,
@@ -202,6 +272,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -227,6 +299,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -252,6 +326,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -278,6 +354,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -303,6 +381,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -328,6 +408,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -353,6 +435,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -379,6 +463,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -404,6 +490,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -429,6 +517,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -454,6 +544,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -480,6 +572,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -505,6 +599,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -530,6 +626,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -555,6 +653,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -574,10 +674,14 @@ namespace Halforbit.ApiClient
             this Request request,
             string contentType)
         {
+            request = request ?? Request.Default;
+
             return new Request(
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -597,10 +701,14 @@ namespace Halforbit.ApiClient
             this Request request,
             string contentEncoding)
         {
+            request = request ?? Request.Default;
+
             return new Request(
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -620,6 +728,8 @@ namespace Halforbit.ApiClient
             this Request request,
             string authentication)
         {
+            request = request ?? Request.Default;
+
             return request.Header("Authentication", authentication);
         }
 
@@ -627,6 +737,8 @@ namespace Halforbit.ApiClient
             this Request request,
             string cookie)
         {
+            request = request ?? Request.Default;
+
             return request.Header("Cookie", cookie);
         }
 
@@ -639,6 +751,8 @@ namespace Halforbit.ApiClient
             return new Request(
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 retryStrategy: request.RetryStrategy,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
@@ -668,6 +782,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 name: request.Name,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
@@ -683,9 +799,10 @@ namespace Halforbit.ApiClient
                 timeout: request.Timeout);
         }
 
-        public static Request JsonBody(
+        public static Request Body(
             this Request request,
-            object body)
+            Stream stream,
+            string contentType = default)
         {
             request = request ?? Request.Default;
 
@@ -693,6 +810,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -702,8 +821,35 @@ namespace Halforbit.ApiClient
                 headers: request.Headers,
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
-                content: new BufferedContent(_utf8Encoding.GetBytes(JsonConvert.SerializeObject(body))),
-                contentType: $"application/json; charset=utf-8",
+                content: new StreamedContent(stream),
+                contentType: contentType ?? request.RequestSerializer.ContentType ?? "application/octet-stream",
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout);
+        }
+
+        public static Request Body<TBody>(
+            this Request request,
+            TBody body)
+        {
+            request = request ?? Request.Default;
+
+            return new Request(
+                requestClient: request.RequestClient,
+                authenticationStrategy: request.AuthenticationStrategy,
+                retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
+                beforeRequestHandlers: request.BeforeRequestHandlers,
+                afterResponseHandlers: request.AfterResponseHandlers,
+                name: request.Name,
+                baseUrl: request.BaseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: new ObjectContent<TBody>(body, request.RequestSerializer),
+                contentType: request.RequestSerializer.ContentType,
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout);
         }
@@ -718,6 +864,8 @@ namespace Halforbit.ApiClient
                 requestClient: request.RequestClient,
                 authenticationStrategy: request.AuthenticationStrategy,
                 retryStrategy: request.RetryStrategy,
+                requestSerializer: request.RequestSerializer,
+                responseDeserializer: request.ResponseDeserializer,
                 beforeRequestHandlers: request.BeforeRequestHandlers,
                 afterResponseHandlers: request.AfterResponseHandlers,
                 name: request.Name,
@@ -738,6 +886,8 @@ namespace Halforbit.ApiClient
             this Request request,
             params (string Key, string Value)[] formValues)
         {
+            request = request ?? Request.Default;
+
             return request.FormBody(formValues.ToReadOnlyDictionary());
         }
 

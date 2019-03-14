@@ -12,6 +12,8 @@ namespace Halforbit.ApiClient
             IRequestClient requestClient,
             IAuthenticationStrategy authenticationStrategy,
             IRetryStrategy retryStrategy,
+            ISerializer requestSerializer,
+            IDeserializer responseDeserializer,
             IReadOnlyList<BeforeRequestDelegate> beforeRequestHandlers,
             IReadOnlyList<AfterResponseDelegate> afterResponseHandlers,
             string name,
@@ -31,6 +33,10 @@ namespace Halforbit.ApiClient
             AuthenticationStrategy = authenticationStrategy;
 
             RetryStrategy = retryStrategy;
+
+            RequestSerializer = requestSerializer;
+
+            ResponseDeserializer = responseDeserializer;
 
             BeforeRequestHandlers = beforeRequestHandlers;
 
@@ -65,6 +71,10 @@ namespace Halforbit.ApiClient
 
         public IRetryStrategy RetryStrategy { get; }
 
+        public ISerializer RequestSerializer { get; }
+
+        public IDeserializer ResponseDeserializer { get; }
+
         public IReadOnlyList<BeforeRequestDelegate> BeforeRequestHandlers { get; }
 
         public IReadOnlyList<AfterResponseDelegate> AfterResponseHandlers { get; }
@@ -95,6 +105,8 @@ namespace Halforbit.ApiClient
             requestClient: Halforbit.ApiClient.RequestClient.Instance,
             authenticationStrategy: default,
             retryStrategy: default,
+            requestSerializer: JsonSerializer.Instance,
+            responseDeserializer: JsonDeserializer.Instance,
             beforeRequestHandlers: new List<BeforeRequestDelegate>(0),
             afterResponseHandlers: new List<AfterResponseDelegate>(0),
             name: default,
@@ -119,6 +131,8 @@ namespace Halforbit.ApiClient
                 requestClient: requestClient ?? source.RequestClient,
                 authenticationStrategy: source.AuthenticationStrategy,
                 retryStrategy: source.RetryStrategy,
+                requestSerializer: source.RequestSerializer,
+                responseDeserializer: source.ResponseDeserializer,
                 beforeRequestHandlers: source.BeforeRequestHandlers,
                 afterResponseHandlers: source.AfterResponseHandlers,
                 name: source.Name,

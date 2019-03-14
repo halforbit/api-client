@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Xunit;
@@ -22,10 +23,43 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                JsonConvert.SerializeObject(result));
+
+            Assert.Equal(
+                "https://reqres.in/api/users",
+                response.RequestedUrl);
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task ListUsers_MapContent()
+        {
+            var response = await _request.Get("users");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            Assert.Equal("application/json", response.ContentType.MediaType);
+
+            Assert.Equal("utf-8", response.ContentType.CharSet);
+
+            var result = response.MapContent(c => c["data"]
+                .Select(e => new
+                {
+                    Id = e["id"],
+
+                    FirstName = e["first_name"],
+
+                    LastName = e["last_name"],
+
+                    Avatar = e["avatar"]
+                })
+                .ToList());
+
+            Assert.Equal(
+                @"[{""Id"":1,""FirstName"":""George"",""LastName"":""Bluth"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""Id"":2,""FirstName"":""Janet"",""LastName"":""Weaver"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""Id"":3,""FirstName"":""Emma"",""LastName"":""Wong"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -57,7 +91,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
@@ -98,7 +132,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
@@ -137,7 +171,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
@@ -174,7 +208,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
@@ -200,7 +234,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.Equal(
                 @"{""data"":{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""}}",
@@ -229,7 +263,7 @@ namespace Halforbit.ApiClient.Tests
         public async Task CreateUser()
         {
             var response = await _request
-                .JsonBody(new
+                .Body(new
                 {
                     name = "morpheus",
 
@@ -243,7 +277,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""leader"",""id"":""",
@@ -259,7 +293,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var response = await _request
                 .RouteValues(new { UserId = 2 })
-                .JsonBody(new
+                .Body(new
                 {
                     name = "morpheus",
 
@@ -273,7 +307,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""zion resident"",""updatedAt"":""",
@@ -289,7 +323,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var response = await _request
                 .RouteValues(new { UserId = 2 })
-                .JsonBody(new
+                .Body(new
                 {
                     name = "morpheus",
 
@@ -303,7 +337,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.JsonContent<JObject>();
+            var result = response.Content<JObject>();
 
             Assert.StartsWith(
                 @"{""name"":""morpheus"",""job"":""zion resident"",""updatedAt"":""",

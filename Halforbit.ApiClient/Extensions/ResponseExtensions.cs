@@ -71,28 +71,24 @@ namespace Halforbit.ApiClient
             }
         }
 
-        public static JToken JsonContent(this Response response)
+        public static TContent Content<TContent>(this Response response)
         {
-            return response.JsonContent<JToken>();
+            return response.Request.ResponseDeserializer
+                .Deserialize<TContent>(response.Content.GetStream());
         }
 
-        public static TValue JsonContent<TValue>(this Response response)
-        {
-            return JsonConvert.DeserializeObject<TValue>(response.TextContent());
-        }
-
-        public static TResult MapJsonContent<TResult>(
+        public static TResult MapContent<TResult>(
             this Response response,
             Func<JToken, TResult> map)
         {
-            return map(response.JsonContent<JToken>());
+            return map(response.Content<JToken>());
         }
 
-        public static IReadOnlyList<TResult> MapJsonArrayContent<TResult>(
+        public static IReadOnlyList<TResult> MapContentArray<TResult>(
             this Response response,
             Func<JToken, TResult> map)
         {
-            return response.JsonContent<JArray>().Select(t => map(t)).ToList();
+            return response.Content<JArray>().Select(t => map(t)).ToList();
         }
     }
 }

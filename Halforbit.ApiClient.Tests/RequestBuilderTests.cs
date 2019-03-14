@@ -344,7 +344,7 @@ namespace Halforbit.ApiClient.Tests
                 charlie = 123
             };
 
-            var request = default(Request).JsonBody(body);
+            var request = default(Request).Body(body);
 
             Assert.Equal(
                 "application/json; charset=utf-8",
