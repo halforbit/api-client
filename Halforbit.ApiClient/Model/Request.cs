@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 
 namespace Halforbit.ApiClient
 {
@@ -19,7 +20,8 @@ namespace Halforbit.ApiClient
             IContent content,
             string contentType,
             string contentEncoding,
-            TimeSpan timeout)
+            TimeSpan timeout,
+            IReadOnlyCollection<HttpStatusCode> allowedStatusCodes)
         {
             Services = services;
 
@@ -44,6 +46,8 @@ namespace Halforbit.ApiClient
             ContentEncoding = contentEncoding;
 
             Timeout = timeout;
+
+            AllowedStatusCodes = allowedStatusCodes;
         }
 
         public RequestServices Services { get; }
@@ -70,6 +74,8 @@ namespace Halforbit.ApiClient
 
         public TimeSpan Timeout { get; }
 
+        public IReadOnlyCollection<HttpStatusCode> AllowedStatusCodes { get; }
+
         public static Request Default => new Request(
             services: RequestServices.Default,
             name: default,
@@ -82,7 +88,17 @@ namespace Halforbit.ApiClient
             content: default,
             contentType: default,
             contentEncoding: default,
-            timeout: TimeSpan.FromSeconds(100));
+            timeout: TimeSpan.FromSeconds(100),
+            allowedStatusCodes: new HashSet<HttpStatusCode>
+            {
+                HttpStatusCode.OK,
+                HttpStatusCode.Created,
+                HttpStatusCode.Accepted,
+                HttpStatusCode.NonAuthoritativeInformation,
+                HttpStatusCode.NoContent,
+                HttpStatusCode.ResetContent,
+                HttpStatusCode.PartialContent
+            }); 
 
         public static Request Create(
             string baseUrl = default,
@@ -102,7 +118,8 @@ namespace Halforbit.ApiClient
                 content: source.Content,
                 contentType: source.ContentType,
                 contentEncoding: source.ContentEncoding,
-                timeout: source.Timeout);
+                timeout: source.Timeout,
+                allowedStatusCodes: source.AllowedStatusCodes);
         }
     }
 }

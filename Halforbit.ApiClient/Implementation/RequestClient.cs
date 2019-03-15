@@ -132,7 +132,6 @@ namespace Halforbit.ApiClient
                             return await ApplyAfterResponseHandlers(
                                 services.AfterResponseHandlers, 
                                 request, 
-                                requestUrl,
                                 new Response(
                                     statusCode: default,
                                     headers: default,
@@ -156,7 +155,6 @@ namespace Halforbit.ApiClient
                     return await ApplyAfterResponseHandlers(
                         services.AfterResponseHandlers,
                         request,
-                        requestUrl,
                         new Response(
                             statusCode: default,
                             headers: default,
@@ -213,7 +211,6 @@ namespace Halforbit.ApiClient
                 return await ApplyAfterResponseHandlers(
                     services.AfterResponseHandlers,
                     request,
-                    requestUrl,
                     new Response(
                         statusCode: httpResponseMessage.StatusCode,
                         headers: httpResponseMessage.Headers.ToDictionary(
@@ -257,7 +254,6 @@ namespace Halforbit.ApiClient
         static async Task<Response> ApplyAfterResponseHandlers(
             IReadOnlyList<RequestServices.AfterResponseDelegate> handlers,
             Request request,
-            string requestUrl,
             Response response)
         {
             var count = handlers.Count;
@@ -266,8 +262,16 @@ namespace Halforbit.ApiClient
             {
                 for(var i = 0; i < count; i++)
                 {
-                    response = await handlers[i](request, requestUrl, response);
+                    response = await handlers[i](request, response);
                 }
+            }
+
+            if(!request.AllowedStatusCodes.Contains(response.StatusCode))
+            {
+                throw new ApiRequestException(
+                    $"Unexpected status code '{response.StatusCode}'",
+                    request,
+                    response);
             }
 
             return response;

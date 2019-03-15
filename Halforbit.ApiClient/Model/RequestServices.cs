@@ -58,7 +58,6 @@ namespace Halforbit.ApiClient
 
         public delegate Task<Response> AfterResponseDelegate(
             Request request,
-            string requestUrl,
             Response response);
     }
 }

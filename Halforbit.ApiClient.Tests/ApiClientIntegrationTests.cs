@@ -191,7 +191,7 @@ namespace Halforbit.ApiClient.Tests
             var handlerCalled = false;
 
             var response = await _request
-                .AfterResponse((q, u, r) =>
+                .AfterResponse((q, r) =>
                 {
                     Assert.Equal("users", q.Resource);
 
@@ -247,9 +247,19 @@ namespace Halforbit.ApiClient.Tests
         }
 
         [Fact, Trait("Type", "Integration")]
-        public async Task SingleUserNotFound()
+        public async Task SingleUserNotFound_Exception()
+        {
+            await Assert.ThrowsAsync<ApiRequestException>(
+                async () => await _request
+                    .RouteValues(new { UserId = 23 })
+                    .GetAsync("users/{UserId}"));
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task SingleUserNotFound_Expected()
         {
             var response = await _request
+                .AllowNotFound()
                 .RouteValues(new { UserId = 23 })
                 .GetAsync("users/{UserId}");
 
@@ -388,7 +398,8 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task GetServerUnreachable()
         {
-            var request = Request.Create("https://doesnt.exist");
+            var request = Request.Create("https://doesnt.exist")
+                .AllowAnyStatusCode();
             
             var response = await request.GetAsync("something/somewhere");
 
@@ -411,6 +422,7 @@ namespace Halforbit.ApiClient.Tests
         public async Task GetRequestTimeout()
         {
             var request = Request.Create("https://doesnt.exist")
+                .AllowAnyStatusCode()
                 .Timeout(TimeSpan.FromMilliseconds(1));
 
             var response = await request.GetAsync("something/somewhere");

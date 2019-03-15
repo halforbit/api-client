@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +43,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request BearerTokenAuthentication(
@@ -71,7 +74,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request CookieAuthentication(
@@ -101,7 +105,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Retry(
@@ -134,7 +139,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request BeforeRequest(
@@ -165,12 +171,13 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request AfterResponse(
             this Request request,
-            Func<Request, string, Response, Task<Response>> handler)
+            Func<Request, Response, Task<Response>> handler)
         {
             request = request ?? Request.Default;
 
@@ -196,7 +203,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request JsonRequestSerialization(
@@ -225,7 +233,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request JsonResponseSerialization(
@@ -254,7 +263,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         // Request ////////////////////////////////////////////////////////////
@@ -277,7 +287,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request BaseUrl(
@@ -298,7 +309,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Method(
@@ -319,7 +331,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Resource(
@@ -340,7 +353,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request RouteValue(
@@ -362,7 +376,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request RouteValues(
@@ -383,7 +398,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request RouteValues(
@@ -404,7 +420,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request RouteValues(
@@ -425,7 +442,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request QueryValue(
@@ -447,7 +465,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request QueryValues(
@@ -468,7 +487,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request QueryValues(
@@ -489,7 +509,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request QueryValues(
@@ -510,7 +531,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Header(
@@ -532,7 +554,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Headers(
@@ -553,7 +576,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Headers(
@@ -574,7 +598,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Headers(
@@ -595,7 +620,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request ContentType(
@@ -616,7 +642,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: contentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request ContentEncoding(
@@ -637,7 +664,8 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: contentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Authentication(
@@ -676,7 +704,54 @@ namespace Halforbit.ApiClient
                 content: request.Content,
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: timeout);
+                timeout: timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
+        }
+
+        public static Request Allow(
+            this Request request,
+            params HttpStatusCode[] statusCodes)
+        {
+            request = request ?? Request.Default;
+
+            var expectedStatusCodes = new HashSet<HttpStatusCode>(request.AllowedStatusCodes);
+
+            foreach(var statusCode in statusCodes)
+            {
+                expectedStatusCodes.Add(statusCode);
+            }
+
+            return new Request(
+                services: request.Services,
+                name: request.Name,
+                baseUrl: request.BaseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: request.Content,
+                contentType: request.ContentType,
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout,
+                allowedStatusCodes: expectedStatusCodes);
+        }
+
+        public static Request AllowNotFound(
+            this Request request)
+        {
+            request = request ?? Request.Default;
+
+            return request.Allow(HttpStatusCode.NotFound);
+        }
+
+        public static Request AllowAnyStatusCode(
+            this Request request)
+        {
+            return request.Allow(new HttpStatusCode[] { 0 }.Concat(Enum
+                .GetValues(typeof(HttpStatusCode))
+                .Cast<HttpStatusCode>())
+                .ToArray());
         }
 
         // Request Body ///////////////////////////////////////////////////////
@@ -700,7 +775,8 @@ namespace Halforbit.ApiClient
                 content: new BufferedContent(_utf8Encoding.GetBytes(body)),
                 contentType: $"{mediaType}; charset=utf-8",
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Body(
@@ -722,7 +798,8 @@ namespace Halforbit.ApiClient
                 content: new StreamedContent(stream),
                 contentType: contentType ?? request.Services.RequestSerializer.ContentType ?? "application/octet-stream",
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request Body<TBody>(
@@ -743,7 +820,8 @@ namespace Halforbit.ApiClient
                 content: new ObjectContent<TBody>(body, request.Services.RequestSerializer),
                 contentType: request.Services.RequestSerializer.ContentType,
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request FormBody(
@@ -765,7 +843,8 @@ namespace Halforbit.ApiClient
                     new FormUrlEncodedContent(formValues).ReadAsStringAsync().Result)),
                 contentType: $"application/x-www-form-urlencoded; charset=utf-8",
                 contentEncoding: request.ContentEncoding,
-                timeout: request.Timeout);
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes);
         }
 
         public static Request FormBody(
