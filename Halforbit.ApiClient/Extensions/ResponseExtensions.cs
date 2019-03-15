@@ -64,7 +64,7 @@ namespace Halforbit.ApiClient
                     default: throw new Exception($"Unhandled charset '{response.ContentType.CharSet}'");
                 }
             }
-
+            
             using (var sr = new StreamReader(response.Content.GetStream(), encoding))
             {
                 return sr.ReadToEnd();

@@ -5,6 +5,24 @@ namespace Halforbit.ApiClient
 {
     public static partial class RequestExtensions
     {
+        public static Request RequestClient(
+            this Request request,
+            IRequestClient requestClient)
+        {
+            request = request ?? Request.Default;
+
+            var services = request.Services;
+
+            return request.Services(new RequestServices(
+                requestClient: requestClient,
+                authenticationStrategy: services.AuthenticationStrategy,
+                retryStrategy: services.RetryStrategy,
+                requestSerializer: services.RequestSerializer,
+                responseDeserializer: services.ResponseDeserializer,
+                beforeRequestHandlers: services.BeforeRequestHandlers,
+                afterResponseHandlers: services.AfterResponseHandlers));
+        }
+
         public static Request BasicAuthentication(
             this Request request,
             string username,

@@ -20,41 +20,42 @@ Available on NuGet: [Halforbit.ApiClient](https://www.nuget.org/packages/Halforb
 
 ```csharp
 // Create a base request
-var request = Request.Create(baseUrl: "https://alfa.bravo");
+var request = Request.Default.BaseUrl("https://alfa.bravo");
 
 // GET some Users from a JSON array
-var response = (await request.Get("users")).JsonContent<IReadOnlyList<User>>();
+var response = (await request.GetAsync("users")).Content<IReadOnlyList<User>>();
 
 // POST a new person
 var response = await request
-    .JsonBody(new
+    .Body(new
     {
         Name = "John Doe",
         Job = "Farmer"
     })
-    .Post("users");
+    .PostAsync("users");
 
 // GET an image
-var response = await request.Get("charlie/delta.jpg");
+var response = await request.GetAsync("charlie/delta.jpg");
 var imageBytes = response.ByteArrayContent(); // image data
 var imageType = response.ContentType.MediaType; // e.g. `image/jpeg`
 ```
 
 ## Creating Requests
 
-We provide a chained, fluent interface to construct `Request` objects. Each instance of `Request` is immutable and can be safely reused and built upon:
+We provide a chained, fluent interface to construct `Request` objects. Each instance of `Request` is immutable and can be safely reused and built upon. You can create partial requests and compose them together later in a way that is thread-safe:
 
 ```csharp
 // Here both requests will have the base URL and header from baseRequest.
 
-var baseRequest = Request.Create(baseUrl: "https://alfa.bravo")
+var baseRequest = Request.Default
+    .BaseUrl("https://alfa.bravo")
     .Header("x-alfa", "bravo");
 
-var responseA = await baseRequest.Get("people");
+var responseA = await baseRequest.GetAsync("people");
 
 var responseB = await baseRequest
     .FormBody(("first_name", "John"), ("last_name", "Doe"))
-    .Post("people");
+    .PostAsync("people");
 ```
 
 ### Route Templating
@@ -71,13 +72,13 @@ var response = request
         Category = "vehicles",
         VehicleId = 2345
     })
-    .Get("categories/{Category}/images/{VehicleId}");
+    .GetAsync("categories/{Category}/images/{VehicleId}");
 ```
 
 You can also just use literal string values, or use string interpolation:
 
 ```csharp
-var request = Request.Create($"https://alfa.bravo/{accountId}");
+var request = Request.Default.BaseUrl($"https://alfa.bravo/{accountId}");
 ```
 
 ### Route Values, Query Values, and Headers
@@ -101,12 +102,24 @@ Several methods are provided to easily specify request bodies of various kinds:
 // Plain text body.
 request.TextBody("hello, world!");
 
-// JSON body. This can be any JSON-serializable object, including classes, 
-// anonymous objects, JObject, etc.
-request.JsonBody(new { Name = "John Doe" });
-
 // Form body. This can be tuple values or a dictionary of values.
 request.FormBody(("first_name", "John"), ("last_name", "Doe"));
+
+// Object body. This can be any serializable object, including classes, 
+// anonymous objects, JObject, etc. The default object serialization 
+// technique is JSON.
+request.Body(new { Name = "John Doe" });
+
+// Byte array body.
+request.Body(new byte[] { 1, 2, 3 });
+
+// Stream body. Be sure to close / dispose of your stream properly.
+using(var stream = File.OpenRead("body.txt"))
+{
+    await request
+        .Body(stream, contentType: "text/plain; charset: utf-8")
+        .PostAsync();
+}
 ```
 
 ## Handling Responses
@@ -116,16 +129,86 @@ var plainText = response.TextContent();
 
 var bytes = response.ByteContent();
 
-var jsonAsClass = response.JsonContent<Person>();
+var deserializedAsClass = response.Content<Person>();
 
-var jsonAsJToken = response.JsonContent();
+var deserializedAsJToken = response.Content<JToken>();
 
-// Map a JToken (usually a JObject or JArray) to a type.
-var mappedJToken = response.MapJsonContent(j => new Person(j["name"]));
+// Map a JToken to a type.
+var mappedJToken = response.MapContent(c => new Person(c["name"]));
 
 // Map an array of JTokens to an IReadOnlyList<> of your favorite type.
-var mappedJArray = response.MapJsonArrayContent(j => new Person(j["name"]));
+var mappedJArray = response.MapContentArray(e => new Person(e["name"]));
 ```
+
+## Automatic Retry
+
+You can opt in to automatic retry by specifying the maximum number of times a transient failure should be retried:
+
+```csharp
+// Default is 5 retries
+request.Retry();
+
+// Specify a retry count
+request.Retry(retryCount: 10);
+```
+
+The first retry will be immediate, and the interval between subsequent retries is exponential, e.g. 1 sec, 2 sec, 4 sec, 8 sec, etc.
+
+## Dependency Injection and Testing
+
+Behind the scenes, requests use an `IRequestClient` to execute and retrieve a response. When you create a request, you can optionally specify an `IRequestClient`:
+
+```csharp
+// Use the IRequestClient instance we're providing
+var request = Request.Default
+    .RequestClient(requestClient)
+    .BaseUrl("https://alfa.bravo");
+```
+
+If you do not provide a request client, a static instance, `RequestClient.Instance`, will be used automatically:
+
+```csharp
+// Use RequestClient.Instance automatically
+var request = Request.Default.BaseUrl("https://alfa.bravo");
+```
+
+### Dependency Injection
+
+If you wish to use constructor dependency injection and unit testing, you should register a singleton instance of `RequestClient`:
+
+```csharp
+// Using Microsoft.Exensions.DependencyInjection:
+services.AddSingleton<IRequestClient, RequestClient>();
+
+// Using Autofac:
+builder.RegisterType<RequestClient>().AsImplementedInterfaces().InstancePerLifetimeScope();
+```
+
+You can then receive an `IRequestClient` in your constructors and use it when creating requests:
+
+```csharp
+class MyClient
+{
+    readonly Request _request;
+
+    public MyClient(IRequestClient requestClient)
+    {
+        _request = Request.Default
+            .RequestClient(requestClient)
+            .BaseUrl("https://alfa.bravo");
+    }
+
+    public async Task<string> GetAThing()
+    {
+        return await _request.GetAsync("things/123").TextContent();
+    }
+}
+```
+Here we make a base request and store it in a private field for use by member methods.
+
+### Unit Testing
+
+`IRequestClient` contains only one method, `Execute(Request)`, to mock for a unit test. You can use the mocking framework of your choice to simulate responses from this method and verify the correctness of calls.
 
 ## Authentication
 
@@ -159,7 +242,9 @@ public class MyAuthenticationClient
 
     public MyAuthenticationClient(IRequestClient requestClient)
     {
-        _request = Request.Create("https://alfa.bravo", requestClient);
+        _request = Request.Default
+            .RequestClient(requestClient)
+            .BaseUrl("https://alfa.bravo");
     }
 
     public async Task<IAuthenticationToken> Authenticate()
@@ -168,10 +253,10 @@ public class MyAuthenticationClient
             .FormBody(
                 ("username", "probably_dont"),
                 ("password", "hardcode_this"))
-            .Post("token"))
-            .MapJsonContent(j => new AuthenticationToken(
-                content: (string)j["access_token"],
-                expireTime: DateTime.UtcNow.AddSeconds((int)j["expires_in"])));
+            .PostAsync("token"))
+            .MapContent(c => new AuthenticationToken(
+                content: (string)c["access_token"],
+                expireTime: DateTime.UtcNow.AddSeconds((int)c["expires_in"])));
     }
 }
 ```
@@ -184,72 +269,6 @@ Cookie authentication is similar to bearer token authentication. Just provide a 
 request.CookieAuthentication(
     async () => await _myAuthenticationClient.Authenticate());
 ```
-
-## Automatic Retry
-
-You can opt in to automatic retry by specifying the maximum number of times a transient failure should be retried:
-
-```csharp
-request.Retry(retryCount: 5);
-```
-
-The first retry will be immediate, and the interval between subsequent retries is exponential, e.g. 1 sec, 2 sec, 4 sec, 8 sec, etc.
-
-## Dependency Injection and Testing
-
-Behind the scenes, requests use an `IRequestClient` to execute and retrieve a response. When you `Create` a request, you can optionally specify an `IRequestClient`:
-
-```csharp
-// Use the IRequestClient instance we're providing
-var request = Request.Create(
-    baseUrl: "https://alfa.bravo",
-    requestClient: requestClient);
-```
-
-The `requestClient` parameter is optional. If you do not provide it then a static instance, `RequestClient.Instance`, will be used automatically:
-
-```csharp
-// Use RequestClient.Instance automatically
-var request = Request.Create(baseUrl: "https://alfa.bravo"); 
-```
-
-### Dependency Injection
-
-If you wish to use constructor dependency injection and unit testing, you should register a singleton instance of `RequestClient`:
-
-```csharp
-// Using Microsoft.Exensions.DependencyInjection:
-services.AddSingleton<IRequestClient, RequestClient>();
-
-// Using Autofac:
-builder.RegisterType<RequestClient>().AsImplementedInterfaces().InstancePerLifetimeScope();
-```
-
-You can then receive an `IRequestClient` in your constructors and use it when creating requests:
-
-```csharp
-class MyClient
-{
-    readonly Request _request;
-
-    public MyClient(IRequestClient requestClient)
-    {
-        _request = Request.Create(
-            baseUrl: "https://alfa.bravo",
-            requestClient: requestClient);
-    }
-
-    public async Task<string> GetAThing()
-    {
-        return await _request.Get("things/123").TextContent();
-    }
-}
-```
-Here we make a base request and store it in a private field for use by member methods.
-
-### Unit Testing
-
-`IRequestClient` contains only one method, `Execute(Request)`, to mock for a unit test. You can use the mocking framework of your choice to simulate responses from this method and verify the correctness of calls.
 
 ## Roadmap
 

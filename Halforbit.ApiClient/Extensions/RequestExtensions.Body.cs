@@ -12,7 +12,7 @@ namespace Halforbit.ApiClient
         public static Request Body(
             this Request request,
 			byte[] body, 
-			string mediaType = default)
+			string contentType = default)
         {
             request = request ?? Request.Default;
 
@@ -25,9 +25,7 @@ namespace Halforbit.ApiClient
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
                 content: new BufferedContent(body),
-                contentType: !string.IsNullOrWhiteSpace(mediaType) ? 
-					$"{mediaType}; charset=utf-8" : 
-					request.ContentType,
+                contentType: contentType ?? request.ContentType ?? "application/octet-stream",
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
@@ -50,7 +48,7 @@ namespace Halforbit.ApiClient
                 routeValues: request.RouteValues,
                 queryValues: request.QueryValues,
                 content: new StreamedContent(stream),
-                contentType: contentType ?? request.Services.RequestSerializer.ContentType ?? "application/octet-stream",
+                contentType: contentType ?? request.ContentType ?? "application/octet-stream",
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
