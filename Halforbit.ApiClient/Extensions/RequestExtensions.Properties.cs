@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
-using System.Threading.Tasks;
+using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Halforbit.ApiClient
 {
     public static partial class RequestExtensions
     {
+        static readonly Regex _outerSlashMatcher = new Regex(
+            @"(^\/+)|(\/+$)",
+            RegexOptions.Compiled);
+
         public static Request Services(
             this Request request,
             RequestServices requestServices)
@@ -38,7 +43,43 @@ namespace Halforbit.ApiClient
 
             return new Request(
                 services: request.Services,
-                baseUrl: baseUrl,
+                baseUrl: !string.IsNullOrWhiteSpace(baseUrl) ?
+                    RemoveOuterSlashes(baseUrl) : 
+                    baseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: request.Content,
+                contentType: request.ContentType,
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes,
+                tags: request.Tags);
+        }
+
+        public static Request BaseUrl(
+            this Request request,
+            params string[] routeSegments)
+        {
+            request = request ?? Request.Default;
+
+            if (routeSegments == null || routeSegments.Length == 0)
+            {
+                return request.BaseUrl(null as string);
+            }
+
+            var sb = new StringBuilder(RemoveOuterSlashes(routeSegments[0]));
+
+            for (var i = 1; i < routeSegments.Length; i++)
+            {
+                sb.Append('/').Append(RemoveOuterSlashes(routeSegments[i]));
+            }
+
+            return new Request(
+                services: request.Services,
+                baseUrl: sb.ToString(),
                 method: request.Method,
                 resource: request.Resource,
                 headers: request.Headers,
@@ -584,5 +625,9 @@ namespace Halforbit.ApiClient
         {
             return request.Tag<string>(nameof(Name));
         }
+
+        static string RemoveOuterSlashes(string routeSegment) => _outerSlashMatcher.Replace(
+            routeSegment, 
+            string.Empty);
     }
 }

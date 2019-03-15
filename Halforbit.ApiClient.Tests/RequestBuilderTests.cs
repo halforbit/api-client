@@ -23,9 +23,22 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Unit")]
         public void RequestBaseUrl()
         {
-            var request = default(Request).BaseUrl("Alfa");
+            var request = default(Request).BaseUrl("//alfa//");
 
-            Assert.Equal("Alfa", request.BaseUrl);
+            Assert.Equal("alfa", request.BaseUrl);
+        }
+
+        [Fact, Trait("Type", "Unit")]
+        public void RequestBaseUrl_Segments()
+        {
+            var request = default(Request).BaseUrl(
+                "//http://alfa.bravo//", 
+                "//charlie//", 
+                "//delta//");
+
+            Assert.Equal(
+                "http://alfa.bravo/charlie/delta", 
+                request.BaseUrl);
         }
 
         // Methods ////////////////////////////////////////////////////////////
