@@ -79,7 +79,7 @@ namespace Halforbit.ApiClient.Tests
                 username: "username",
                 password: "password");
 
-            Assert.True(request.AuthenticationStrategy is BasicAuthenticationStrategy);
+            Assert.True(request.Services.AuthenticationStrategy is BasicAuthenticationStrategy);
         }
         
         [Fact, Trait("Type", "Unit")]
@@ -87,7 +87,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = default(Request).BearerTokenAuthentication(() => null);
 
-            Assert.True(request.AuthenticationStrategy is BearerTokenAuthenticationStrategy);
+            Assert.True(request.Services.AuthenticationStrategy is BearerTokenAuthenticationStrategy);
         }
 
         [Fact, Trait("Type", "Unit")]
@@ -95,7 +95,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = default(Request).CookieAuthentication(() => null);
 
-            Assert.True(request.AuthenticationStrategy is CookieAuthenticationStrategy);
+            Assert.True(request.Services.AuthenticationStrategy is CookieAuthenticationStrategy);
         }
 
         // Routes /////////////////////////////////////////////////////////////

@@ -4,6 +4,6 @@ namespace Halforbit.ApiClient
 {
     public interface IRequestClient
     {
-        Task<Response> Execute(Request request);
+        Task<Response> ExecuteAsync(Request request);
     }
 }

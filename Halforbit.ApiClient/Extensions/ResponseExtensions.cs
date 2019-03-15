@@ -73,7 +73,7 @@ namespace Halforbit.ApiClient
 
         public static TContent Content<TContent>(this Response response)
         {
-            return response.Request.ResponseDeserializer
+            return response.Request.Services.ResponseDeserializer
                 .Deserialize<TContent>(response.Content.GetStream());
         }
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
@@ -9,13 +8,7 @@ namespace Halforbit.ApiClient
         static readonly IReadOnlyDictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
 
         public Request(
-            IRequestClient requestClient,
-            IAuthenticationStrategy authenticationStrategy,
-            IRetryStrategy retryStrategy,
-            ISerializer requestSerializer,
-            IDeserializer responseDeserializer,
-            IReadOnlyList<BeforeRequestDelegate> beforeRequestHandlers,
-            IReadOnlyList<AfterResponseDelegate> afterResponseHandlers,
+            RequestServices services,
             string name,
             string baseUrl,
             string method,
@@ -28,19 +21,7 @@ namespace Halforbit.ApiClient
             string contentEncoding,
             TimeSpan timeout)
         {
-            RequestClient = requestClient;
-
-            AuthenticationStrategy = authenticationStrategy;
-
-            RetryStrategy = retryStrategy;
-
-            RequestSerializer = requestSerializer;
-
-            ResponseDeserializer = responseDeserializer;
-
-            BeforeRequestHandlers = beforeRequestHandlers;
-
-            AfterResponseHandlers = afterResponseHandlers;
+            Services = services;
 
             Name = name;
 
@@ -65,19 +46,7 @@ namespace Halforbit.ApiClient
             Timeout = timeout;
         }
 
-        public IRequestClient RequestClient { get; }
-
-        public IAuthenticationStrategy AuthenticationStrategy { get; }
-
-        public IRetryStrategy RetryStrategy { get; }
-
-        public ISerializer RequestSerializer { get; }
-
-        public IDeserializer ResponseDeserializer { get; }
-
-        public IReadOnlyList<BeforeRequestDelegate> BeforeRequestHandlers { get; }
-
-        public IReadOnlyList<AfterResponseDelegate> AfterResponseHandlers { get; }
+        public RequestServices Services { get; }
 
         public string Name { get; }
 
@@ -102,13 +71,7 @@ namespace Halforbit.ApiClient
         public TimeSpan Timeout { get; }
 
         public static Request Default => new Request(
-            requestClient: Halforbit.ApiClient.RequestClient.Instance,
-            authenticationStrategy: default,
-            retryStrategy: default,
-            requestSerializer: JsonSerializer.Instance,
-            responseDeserializer: JsonDeserializer.Instance,
-            beforeRequestHandlers: new List<BeforeRequestDelegate>(0),
-            afterResponseHandlers: new List<AfterResponseDelegate>(0),
+            services: RequestServices.Default,
             name: default,
             baseUrl: default,
             method: default,
@@ -128,13 +91,7 @@ namespace Halforbit.ApiClient
             var source = Default;
 
             return new Request(
-                requestClient: requestClient ?? source.RequestClient,
-                authenticationStrategy: source.AuthenticationStrategy,
-                retryStrategy: source.RetryStrategy,
-                requestSerializer: source.RequestSerializer,
-                responseDeserializer: source.ResponseDeserializer,
-                beforeRequestHandlers: source.BeforeRequestHandlers,
-                afterResponseHandlers: source.AfterResponseHandlers,
+                services: source.Services,
                 name: source.Name,
                 baseUrl: baseUrl ?? source.BaseUrl,
                 method: source.Method,
@@ -147,14 +104,5 @@ namespace Halforbit.ApiClient
                 contentEncoding: source.ContentEncoding,
                 timeout: source.Timeout);
         }
-
-        public delegate Task<(Request request, string requestUrl)> BeforeRequestDelegate(
-            Request request,
-            string requestUrl);
-
-        public delegate Task<Response> AfterResponseDelegate(
-            Request request,
-            string requestUrl,
-            Response response);
     }
 }

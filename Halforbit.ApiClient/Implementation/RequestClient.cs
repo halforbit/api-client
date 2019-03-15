@@ -20,19 +20,21 @@ namespace Halforbit.ApiClient
 
         public static IRequestClient Instance => new RequestClient();
 
-        public async Task<Response> Execute(Request request)
+        public async Task<Response> ExecuteAsync(Request request)
         {
+            var services = request.Services;
+
             var reauthorizeRetriesRemaining = 1;
 
-            var failRetriesRemaining = request.RetryStrategy?.RetryCount ?? 0;
+            var failRetriesRemaining = services.RetryStrategy?.RetryCount ?? 0;
 
             var failRetryCount = 0;
-
+            
             while(true)
             {
-                if(request.AuthenticationStrategy != null)
+                if(services.AuthenticationStrategy != null)
                 {
-                    request = await request.AuthenticationStrategy.Apply(request);
+                    request = await services.AuthenticationStrategy.Apply(request);
                 }
 
                 var requestUrl = !string.IsNullOrWhiteSpace(request.BaseUrl) ? 
@@ -57,7 +59,7 @@ namespace Halforbit.ApiClient
                 }
 
                 var (newRequest, newRequestUrl) = await ApplyBeforeRequestHandlers(
-                    request.BeforeRequestHandlers, 
+                    services.BeforeRequestHandlers, 
                     request, 
                     requestUrl);
 
@@ -109,14 +111,14 @@ namespace Halforbit.ApiClient
 
                     if(finishedTask == timeoutTask)
                     {
-                        if (request.RetryStrategy?.ShouldRetryOnTimeout ?? false && 
+                        if (services.RetryStrategy?.ShouldRetryOnTimeout ?? false && 
                             failRetriesRemaining > 0)
                         {
                             failRetriesRemaining--;
 
                             failRetryCount++;
 
-                            var retryInterval = request.RetryStrategy.GetRetryTimeout(failRetryCount);
+                            var retryInterval = services.RetryStrategy.GetRetryTimeout(failRetryCount);
 
                             if (retryInterval.TotalSeconds > 0)
                             {
@@ -128,7 +130,7 @@ namespace Halforbit.ApiClient
                         else
                         {
                             return await ApplyAfterResponseHandlers(
-                                request.AfterResponseHandlers, 
+                                services.AfterResponseHandlers, 
                                 request, 
                                 requestUrl,
                                 new Response(
@@ -152,7 +154,7 @@ namespace Halforbit.ApiClient
                 catch(Exception ex)
                 {
                     return await ApplyAfterResponseHandlers(
-                        request.AfterResponseHandlers,
+                        services.AfterResponseHandlers,
                         request,
                         requestUrl,
                         new Response(
@@ -170,24 +172,24 @@ namespace Halforbit.ApiClient
 
                 var s = await httpResponseMessage.Content.ReadAsStreamAsync();
 
-                if (request.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
+                if (services.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
                     reauthorizeRetriesRemaining > 0)
                 {
-                    await request.AuthenticationStrategy.Reauthenticate();
+                    await services.AuthenticationStrategy.Reauthenticate();
 
                     reauthorizeRetriesRemaining--;
 
                     continue;
                 }
 
-                if (request.RetryStrategy?.ShouldRetry(httpResponseMessage.StatusCode) ?? false && 
+                if (services.RetryStrategy?.ShouldRetry(httpResponseMessage.StatusCode) ?? false && 
                     failRetriesRemaining > 0)
                 { 
                     failRetriesRemaining--;
 
                     failRetryCount++;
 
-                    var retryInterval = request.RetryStrategy.GetRetryTimeout(failRetryCount);
+                    var retryInterval = services.RetryStrategy.GetRetryTimeout(failRetryCount);
 
                     if(retryInterval.TotalSeconds > 0)
                     {
@@ -209,7 +211,7 @@ namespace Halforbit.ApiClient
                 var responseContent = new StreamedContent(await httpResponseMessage.Content.ReadAsStreamAsync());
 
                 return await ApplyAfterResponseHandlers(
-                    request.AfterResponseHandlers,
+                    services.AfterResponseHandlers,
                     request,
                     requestUrl,
                     new Response(
@@ -235,7 +237,7 @@ namespace Halforbit.ApiClient
         }
 
         static async Task<(Request Request, string RequestUrl)> ApplyBeforeRequestHandlers(
-            IReadOnlyList<Request.BeforeRequestDelegate> handlers,
+            IReadOnlyList<RequestServices.BeforeRequestDelegate> handlers,
             Request request,
             string requestUrl)
         {
@@ -253,7 +255,7 @@ namespace Halforbit.ApiClient
         }
 
         static async Task<Response> ApplyAfterResponseHandlers(
-            IReadOnlyList<Request.AfterResponseDelegate> handlers,
+            IReadOnlyList<RequestServices.AfterResponseDelegate> handlers,
             Request request,
             string requestUrl,
             Response response)

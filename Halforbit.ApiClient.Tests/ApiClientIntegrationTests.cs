@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -15,7 +16,7 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers()
         {
-            var response = await _request.Get("users");
+            var response = await _request.GetAsync("users");
             
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -37,7 +38,7 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers_MapContent()
         {
-            var response = await _request.Get("users");
+            var response = await _request.GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -83,7 +84,7 @@ namespace Halforbit.ApiClient.Tests
 
             var response = await _request
                 .BearerTokenAuthentication(Authenticate)
-                .Get("users");
+                .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -124,7 +125,7 @@ namespace Halforbit.ApiClient.Tests
 
             var response = await _request
                 .CookieAuthentication(Authenticate)
-                .Get("users");
+                .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -163,7 +164,7 @@ namespace Halforbit.ApiClient.Tests
 
                     return Task.FromResult((q, u));
                 })
-                .Get("users");
+                .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -200,7 +201,7 @@ namespace Halforbit.ApiClient.Tests
 
                     return Task.FromResult(r);
                 })
-                .Get("users");
+                .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -226,7 +227,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var response = await _request
                 .RouteValues(new { UserId = 2 })
-                .Get("users/{UserId}");
+                .GetAsync("users/{UserId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -250,7 +251,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var response = await _request
                 .RouteValues(new { UserId = 23 })
-                .Get("users/{UserId}");
+                .GetAsync("users/{UserId}");
 
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
 
@@ -269,7 +270,7 @@ namespace Halforbit.ApiClient.Tests
 
                     job = "leader"
                 })
-                .Post("users");
+                .PostAsync("users");
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
@@ -299,7 +300,7 @@ namespace Halforbit.ApiClient.Tests
 
                     job = "zion resident"
                 })
-                .Put("users/{UserId}");
+                .PutAsync("users/{UserId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -329,7 +330,7 @@ namespace Halforbit.ApiClient.Tests
 
                     job = "zion resident"
                 })
-                .Patch("users/{UserId}");
+                .PatchAsync("users/{UserId}");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -353,7 +354,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var response = await _request
                 .RouteValues(new { UserId = 2 })
-                .Delete("users/{UserId}");
+                .DeleteAsync("users/{UserId}");
 
             Assert.Equal(
                 HttpStatusCode.NoContent,
@@ -371,7 +372,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = Request.Create("https://s3.amazonaws.com");
 
-            var response = await request.Get("uifaces/faces/twitter/calebogden/128.jpg");
+            var response = await request.GetAsync("uifaces/faces/twitter/calebogden/128.jpg");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
@@ -389,7 +390,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = Request.Create("https://doesnt.exist");
             
-            var response = await request.Get("something/somewhere");
+            var response = await request.GetAsync("something/somewhere");
 
             Assert.Equal(0, (int)response.StatusCode);
 
@@ -412,7 +413,7 @@ namespace Halforbit.ApiClient.Tests
             var request = Request.Create("https://doesnt.exist")
                 .Timeout(TimeSpan.FromMilliseconds(1));
 
-            var response = await request.Get("something/somewhere");
+            var response = await request.GetAsync("something/somewhere");
 
             Assert.Equal(0, (int)response.StatusCode);
 
