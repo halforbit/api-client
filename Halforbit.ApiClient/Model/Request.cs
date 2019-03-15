@@ -10,7 +10,6 @@ namespace Halforbit.ApiClient
 
         public Request(
             RequestServices services,
-            string name,
             string baseUrl,
             string method,
             string resource,
@@ -21,11 +20,10 @@ namespace Halforbit.ApiClient
             string contentType,
             string contentEncoding,
             TimeSpan timeout,
-            IReadOnlyCollection<HttpStatusCode> allowedStatusCodes)
+            IReadOnlyCollection<HttpStatusCode> allowedStatusCodes,
+            IReadOnlyDictionary<string, object> tags)
         {
             Services = services;
-
-            Name = name;
 
             BaseUrl = baseUrl;
 
@@ -48,11 +46,11 @@ namespace Halforbit.ApiClient
             Timeout = timeout;
 
             AllowedStatusCodes = allowedStatusCodes;
+
+            Tags = tags;
         }
 
         public RequestServices Services { get; }
-
-        public string Name { get; }
 
         public string BaseUrl { get; }
 
@@ -76,9 +74,10 @@ namespace Halforbit.ApiClient
 
         public IReadOnlyCollection<HttpStatusCode> AllowedStatusCodes { get; }
 
+        public IReadOnlyDictionary<string, object> Tags { get; }
+
         public static Request Default => new Request(
             services: RequestServices.Default,
-            name: default,
             baseUrl: default,
             method: default,
             resource: default,
@@ -98,7 +97,8 @@ namespace Halforbit.ApiClient
                 HttpStatusCode.NoContent,
                 HttpStatusCode.ResetContent,
                 HttpStatusCode.PartialContent
-            }); 
+            },
+            tags: new Dictionary<string, object>(0)); 
 
         public static Request Create(
             string baseUrl = default,
@@ -108,7 +108,6 @@ namespace Halforbit.ApiClient
 
             return new Request(
                 services: source.Services,
-                name: source.Name,
                 baseUrl: baseUrl ?? source.BaseUrl,
                 method: source.Method,
                 resource: source.Resource,
@@ -119,7 +118,8 @@ namespace Halforbit.ApiClient
                 contentType: source.ContentType,
                 contentEncoding: source.ContentEncoding,
                 timeout: source.Timeout,
-                allowedStatusCodes: source.AllowedStatusCodes);
+                allowedStatusCodes: source.AllowedStatusCodes,
+                tags: source.Tags);
         }
     }
 }

@@ -1,7 +1,6 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -249,10 +248,9 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task SingleUserNotFound_Exception()
         {
-            await Assert.ThrowsAsync<ApiRequestException>(
-                async () => await _request
-                    .RouteValues(new { UserId = 23 })
-                    .GetAsync("users/{UserId}"));
+            await Assert.ThrowsAsync<ApiRequestException>(async () => await _request
+                .RouteValues(new { UserId = 23 })
+                .GetAsync("users/{UserId}"));
         }
 
         [Fact, Trait("Type", "Integration")]

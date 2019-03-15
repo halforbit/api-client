@@ -17,7 +17,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = default(Request).Name("Alfa");
 
-            Assert.Equal("Alfa", request.Name);
+            Assert.Equal("Alfa", request.Name());
         }
 
         [Fact, Trait("Type", "Unit")]

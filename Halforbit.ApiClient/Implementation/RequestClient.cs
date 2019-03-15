@@ -168,8 +168,6 @@ namespace Halforbit.ApiClient
                             requestedUrl: requestUrl));
                 }
 
-                var s = await httpResponseMessage.Content.ReadAsStreamAsync();
-
                 if (services.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
                     reauthorizeRetriesRemaining > 0)
                 {
