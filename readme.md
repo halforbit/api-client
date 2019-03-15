@@ -257,3 +257,4 @@ Some features that are planned for implementation:
 - `Content-Encoding`, gzip/deflate support for compressed requests and responses.
 - Support multipart requests.
 - More robust support for e.g. `Accept`, `Accept-Charset`, `Range`, `206 Partial Content`, `X-Content-Type-Options`.
+- Follow redirects, allow distinction of requested vs redirected url
