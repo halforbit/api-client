@@ -448,13 +448,13 @@ namespace Halforbit.ApiClient
                 tags: request.Tags);
         }
 
-        public static Request Authentication(
+        public static Request Authorization(
             this Request request,
-            string authentication)
+            string authorization)
         {
             request = request ?? Request.Default;
 
-            return request.Header("Authentication", authentication);
+            return request.Header("Authorization", authorization);
         }
 
         public static Request Cookie(

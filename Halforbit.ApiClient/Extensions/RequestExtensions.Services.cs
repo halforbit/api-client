@@ -15,7 +15,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: requestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -23,7 +23,7 @@ namespace Halforbit.ApiClient
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
-        public static Request BasicAuthentication(
+        public static Request BasicAuthorization(
             this Request request,
             string username,
             string password)
@@ -34,7 +34,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: new BasicAuthenticationStrategy(username, password),
+                authorizationStrategy: new BasicAuthorizationStrategy(username, password),
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -42,9 +42,9 @@ namespace Halforbit.ApiClient
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
-        public static Request BearerTokenAuthentication(
+        public static Request BearerTokenAuthorization(
             this Request request,
-            Func<Task<IAuthenticationToken>> getBearerToken)
+            Func<Task<IAuthorizationToken>> getBearerToken)
         {
             request = request ?? Request.Default;
 
@@ -52,7 +52,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: new BearerTokenAuthenticationStrategy(getBearerToken),
+                authorizationStrategy: new BearerTokenAuthorizationStrategy(getBearerToken),
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -60,9 +60,9 @@ namespace Halforbit.ApiClient
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
-        public static Request CookieAuthentication(
+        public static Request CookieAuthorization(
             this Request request,
-            Func<Task<IAuthenticationToken>> getCookie)
+            Func<Task<IAuthorizationToken>> getCookie)
         {
             request = request ?? Request.Default;
 
@@ -70,7 +70,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: new CookieAuthenticationStrategy(getCookie),
+                authorizationStrategy: new CookieAuthorizationStrategy(getCookie),
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -89,7 +89,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: new ExponentialBackoffRetryStrategy(
                     retryCount,
                     retryOnTimeout),
@@ -109,7 +109,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -120,7 +120,7 @@ namespace Halforbit.ApiClient
 
         public static Request AfterResponse(
             this Request request,
-            Func<Request, Response, Task<Response>> handler)
+            Func<Response, Task<Response>> handler)
         {
             request = request ?? Request.Default;
 
@@ -128,7 +128,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
@@ -146,7 +146,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: JsonSerializer.Instance,
                 responseDeserializer: services.ResponseDeserializer,
@@ -163,7 +163,7 @@ namespace Halforbit.ApiClient
 
             return request.Services(new RequestServices(
                 requestClient: services.RequestClient,
-                authenticationStrategy: services.AuthenticationStrategy,
+                authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: services.RetryStrategy,
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: JsonDeserializer.Instance,

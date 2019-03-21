@@ -2,9 +2,9 @@
 
 namespace Halforbit.ApiClient
 {
-    public class AuthenticationToken : IAuthenticationToken
+    public class AuthorizationToken : IAuthorizationToken
     {
-        public AuthenticationToken(
+        public AuthorizationToken(
             string content,
             DateTime? expireTime)
         {

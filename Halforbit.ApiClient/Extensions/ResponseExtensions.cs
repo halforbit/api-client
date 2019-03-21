@@ -41,7 +41,7 @@ namespace Halforbit.ApiClient
         {
             var encoding = _utf8Encoding;
 
-            if (response.ContentType != null)
+            if (response.ContentType?.Value != null)
             {
                 var charSet = (response.ContentType.CharSet ?? string.Empty).ToLower();
 
@@ -71,10 +71,55 @@ namespace Halforbit.ApiClient
             }
         }
 
+        public static bool ContentIsText(
+            this Response response)
+        {
+            var mediaType = response.ContentType?.MediaType;
+
+            return mediaType.StartsWith("text/") || mediaType == "application/json";
+        }
+
         public static TContent Content<TContent>(this Response response)
         {
             return response.Request.Services.ResponseDeserializer
                 .Deserialize<TContent>(response.Content.GetStream());
+        }
+
+        public static Response Content(
+            this Response response, 
+            IContent content)
+        {
+            return new Response(
+                statusCode: response.StatusCode,
+                headers: response.Headers,
+                content: content,
+                contentType: response.ContentType,
+                contentEncoding: response.ContentEncoding,
+                isSuccess: response.IsSuccess,
+                errorMessage: response.ErrorMessage,
+                exception: response.Exception,
+                request: response.Request,
+                requestedUrl: response.RequestedUrl);
+        }
+
+        public static (Response Source, Response Peeked) PeekContent(
+            this Response response,
+            int maxPeekLength = 1_024_000)
+        {
+            if(response.Content is StreamedContent streamedContent)
+            {
+                var peekStream = new PeekStream(
+                    streamedContent.GetStream(), 
+                    maxPeekLength);
+
+                return (
+                    response.Content(new StreamedContent(peekStream)),
+                    response.Content(new BufferedContent(peekStream.PeekedData)));
+            }
+            else
+            {
+                return (response, response);
+            }
         }
 
         public static TResult MapContent<TResult>(

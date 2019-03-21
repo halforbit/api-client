@@ -2,7 +2,7 @@
 
 namespace Halforbit.ApiClient
 {
-    public interface IAuthenticationToken
+    public interface IAuthorizationToken
     {
         string Content { get; }
 

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
-    public class BasicAuthenticationStrategy : IAuthenticationStrategy
+    public class BasicAuthorizationStrategy : IAuthorizationStrategy
     {
         readonly string _username;
 
         readonly string _password;
 
-        public BasicAuthenticationStrategy(
+        public BasicAuthorizationStrategy(
             string username,
             string password)
         {
@@ -20,7 +20,7 @@ namespace Halforbit.ApiClient
             _password = password;
         }
 
-        public bool ShouldReauthenticate(HttpStatusCode httpStatusCode) => false;
+        public bool ShouldReauthorize(HttpStatusCode httpStatusCode) => false;
 
         public Task<Request> Apply(Request request)
         {
@@ -31,7 +31,7 @@ namespace Halforbit.ApiClient
             return Task.FromResult(request.Header("Authorization", $"Basic {encoded}"));
         }
 
-        public Task Reauthenticate()
+        public Task Reauthorize()
         {
             throw new NotSupportedException();
         }

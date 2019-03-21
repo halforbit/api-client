@@ -8,10 +8,20 @@ using Xunit;
 
 namespace Halforbit.ApiClient.Tests
 {
+    public class C
+    {
+        public C()
+        {
+            X = new Random().Next();
+        }
+
+        public int X { get; }
+    }
+
     public class ApiClientIntegrationTests
     {
         static readonly Request _request = Request.Create(baseUrl: "https://reqres.in/api");
-
+        
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers()
         {
@@ -70,19 +80,19 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers_BearerToken()
         {
-            var authenticationCalled = false;
+            var authorizationCalled = false;
 
-            async Task<IAuthenticationToken> Authenticate()
+            async Task<IAuthorizationToken> Authorize()
             {
                 await Task.Delay(0);
 
-                authenticationCalled = true;
+                authorizationCalled = true;
 
-                return new AuthenticationToken("abc123", DateTime.UtcNow.AddDays(1));
+                return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
             }
 
             var response = await _request
-                .BearerTokenAuthentication(Authenticate)
+                .BearerTokenAuthorization(Authorize)
                 .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -97,7 +107,7 @@ namespace Halforbit.ApiClient.Tests
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
-            Assert.True(authenticationCalled);
+            Assert.True(authorizationCalled);
 
             Assert.Equal(
                 "Bearer abc123",
@@ -111,19 +121,19 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers_Cookie()
         {
-            var authenticationCalled = false;
+            var authorizationCalled = false;
 
-            async Task<IAuthenticationToken> Authenticate()
+            async Task<IAuthorizationToken> Authorize()
             {
                 await Task.Delay(0);
 
-                authenticationCalled = true;
+                authorizationCalled = true;
 
-                return new AuthenticationToken("abc123", DateTime.UtcNow.AddDays(1));
+                return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
             }
 
             var response = await _request
-                .CookieAuthentication(Authenticate)
+                .CookieAuthorization(Authorize)
                 .GetAsync("users");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
@@ -138,7 +148,7 @@ namespace Halforbit.ApiClient.Tests
                 @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
-            Assert.True(authenticationCalled);
+            Assert.True(authorizationCalled);
 
             Assert.Equal(
                 "abc123",
@@ -190,9 +200,9 @@ namespace Halforbit.ApiClient.Tests
             var handlerCalled = false;
 
             var response = await _request
-                .AfterResponse((q, r) =>
+                .AfterResponse(r =>
                 {
-                    Assert.Equal("users", q.Resource);
+                    Assert.Equal("users", r.Request.Resource);
 
                     Assert.Equal(HttpStatusCode.OK, r.StatusCode);
 
@@ -368,7 +378,7 @@ namespace Halforbit.ApiClient.Tests
                 HttpStatusCode.NoContent,
                 response.StatusCode);
 
-            Assert.Null(response.ContentType);
+            Assert.Null(response.ContentType.Value);
 
             Assert.Equal(
                 "https://reqres.in/api/users/2",

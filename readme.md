@@ -11,7 +11,7 @@ Available on NuGet: [Halforbit.ApiClient](https://www.nuget.org/packages/Halforb
 - Simple, fluent interface
 - Natively `async`, easily parallelizable
 - Templated routes
-- Built-in support for authentication (basic, bearer token, and cookie)
+- Built-in support for authorization (basic, bearer token, and cookie)
 - Built-in support for failure retry
 - Dependency injection and unit testing friendly
 - Cross platform (.NET Standard 2.0) compatability
@@ -42,7 +42,7 @@ var imageType = response.ContentType.MediaType; // e.g. `image/jpeg`
 
 ## Creating Requests
 
-We provide a chained, fluent interface to construct `Request` objects. Each instance of `Request` is immutable and can be safely reused and built upon. You can create partial requests and compose them together later in a way that is thread-safe:
+We provide a chained, fluent interface to construct `Request` objects. Each instance of `Request` is immutable and can be safely reused and built upon. You can create partial requests and compose them together in a way that is thread-safe:
 
 ```csharp
 // Here both requests will have the base URL and header from baseRequest.
@@ -210,25 +210,25 @@ Here we make a base request and store it in a private field for use by member me
 
 `IRequestClient` contains only one method, `Execute(Request)`, to mock for a unit test. You can use the mocking framework of your choice to simulate responses from this method and verify the correctness of calls.
 
-## Authentication
+## Authorization
 
-Several authentication strategies are supported.
+Several authorization strategies are supported.
 
-### Basic Authentication
+### Basic Authorization
 
 ```csharp
-request.BasicAuthentication(
+request.BasicAuthorization(
     username: "probably_dont",
     password: "hardcode_this");
 ```
 
-### Bearer Token Authentication
+### Bearer Token Authorization
 
-You can specify a lambda for retrieving a bearer token. This lambda should produce an `IAuthenticationToken`:
+You can specify a lambda for retrieving a bearer token. This lambda should produce an `IAuthorizationToken`:
 
 ```csharp
-request.BearerTokenAuthentication(
-    async () => await _myAuthenticationClient.Authenticate());
+request.BearerTokenAuthorization(
+    async () => await _myAuthorizationClient.Authorize());
 ```
 
 After the bearer token is retrieved, it is cached for subsequent requests to use. If the token expires, or a request returns `401 Unauthorized`, a new bearer token will be retrieved, and the request will be repeated.
@@ -236,38 +236,38 @@ After the bearer token is retrieved, it is cached for subsequent requests to use
 How you get a bearer token will vary, but here is an example of how you might do so:
 
 ```csharp
-public class MyAuthenticationClient
+public class MyAuthorizationClient
 {
     readonly Request _request;
 
-    public MyAuthenticationClient(IRequestClient requestClient)
+    public MyAuthorizationClient(IRequestClient requestClient)
     {
         _request = Request.Default
             .RequestClient(requestClient)
             .BaseUrl("https://alfa.bravo");
     }
 
-    public async Task<IAuthenticationToken> Authenticate()
+    public async Task<IAuthorizationToken> Authorize()
     {
         return (await _request
             .FormBody(
                 ("username", "probably_dont"),
                 ("password", "hardcode_this"))
             .PostAsync("token"))
-            .MapContent(c => new AuthenticationToken(
+            .MapContent(c => new AuthorizationToken(
                 content: (string)c["access_token"],
                 expireTime: DateTime.UtcNow.AddSeconds((int)c["expires_in"])));
     }
 }
 ```
 
-### Cookie Authentication
+### Cookie Authorization
 
-Cookie authentication is similar to bearer token authentication. Just provide a lambda to retrieve the cookie when it is needed:
+Cookie authorization is similar to bearer token authorization. Just provide a lambda to retrieve the cookie when it is needed:
 
 ```csharp
-request.CookieAuthentication(
-    async () => await _myAuthenticationClient.Authenticate());
+request.CookieAuthorization(
+    async () => await _myAuthorizationClient.Authorize());
 ```
 
 ## Roadmap

@@ -86,29 +86,29 @@ namespace Halforbit.ApiClient.Tests
         // Strategy ///////////////////////////////////////////////////////////
 
         [Fact, Trait("Type", "Unit")]
-        public void RequestBasicAuthentication()
+        public void RequestBasicAuthorization()
         {
-            var request = default(Request).BasicAuthentication(
+            var request = default(Request).BasicAuthorization(
                 username: "username",
                 password: "password");
 
-            Assert.True(request.Services.AuthenticationStrategy is BasicAuthenticationStrategy);
+            Assert.True(request.Services.AuthorizationStrategy is BasicAuthorizationStrategy);
         }
         
         [Fact, Trait("Type", "Unit")]
-        public void RequestBearerTokenAuthentication()
+        public void RequestBearerTokenAuthorization()
         {
-            var request = default(Request).BearerTokenAuthentication(() => null);
+            var request = default(Request).BearerTokenAuthorization(() => null);
 
-            Assert.True(request.Services.AuthenticationStrategy is BearerTokenAuthenticationStrategy);
+            Assert.True(request.Services.AuthorizationStrategy is BearerTokenAuthorizationStrategy);
         }
 
         [Fact, Trait("Type", "Unit")]
-        public void RequestCookieAuthentication()
+        public void RequestCookieAuthorization()
         {
-            var request = default(Request).CookieAuthentication(() => null);
+            var request = default(Request).CookieAuthorization(() => null);
 
-            Assert.True(request.Services.AuthenticationStrategy is CookieAuthenticationStrategy);
+            Assert.True(request.Services.AuthorizationStrategy is CookieAuthorizationStrategy);
         }
 
         // Routes /////////////////////////////////////////////////////////////
@@ -344,7 +344,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal(
                 "text/special; charset=utf-8",
-                request.ContentType);
+                request.ContentType.Value);
         }
 
         [Fact, Trait("Type", "Unit")]
@@ -361,7 +361,7 @@ namespace Halforbit.ApiClient.Tests
 
             Assert.Equal(
                 "application/json; charset=utf-8",
-                request.ContentType);
+                request.ContentType.Value);
 
             Assert.Equal(
                 _utf8Encoding.GetBytes(JsonConvert.SerializeObject(body)),

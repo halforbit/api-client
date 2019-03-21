@@ -3,12 +3,12 @@ using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
-    public interface IAuthenticationStrategy
+    public interface IAuthorizationStrategy
     {
-        bool ShouldReauthenticate(HttpStatusCode statusCode);
+        bool ShouldReauthorize(HttpStatusCode statusCode);
 
         Task<Request> Apply(Request request);
 
-        Task Reauthenticate();
+        Task Reauthorize();
     }
 }

@@ -17,7 +17,7 @@ namespace Halforbit.ApiClient
             IReadOnlyDictionary<string, string> routeValues,
             IReadOnlyDictionary<string, string> queryValues,
             IContent content,
-            string contentType,
+            ContentType contentType,
             string contentEncoding,
             TimeSpan timeout,
             IReadOnlyCollection<HttpStatusCode> allowedStatusCodes,
@@ -66,7 +66,7 @@ namespace Halforbit.ApiClient
 
         public IContent Content { get; }
 
-        public string ContentType { get; }
+        public ContentType ContentType { get; }
 
         public string ContentEncoding { get; }
 

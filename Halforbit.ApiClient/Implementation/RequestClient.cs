@@ -32,9 +32,9 @@ namespace Halforbit.ApiClient
             
             while(true)
             {
-                if(services.AuthenticationStrategy != null)
+                if(services.AuthorizationStrategy != null)
                 {
-                    request = await services.AuthenticationStrategy.Apply(request);
+                    request = await services.AuthorizationStrategy.Apply(request);
                 }
 
                 var requestUrl = !string.IsNullOrWhiteSpace(request.BaseUrl) ? 
@@ -83,7 +83,10 @@ namespace Halforbit.ApiClient
                 {
                     var requestContent = new StreamContent(request.Content.GetStream());
 
-                    requestContent.Headers.Add("Content-Type", request.ContentType);
+                    if(!string.IsNullOrWhiteSpace(request.ContentType?.Value))
+                    {
+                        requestContent.Headers.Add("Content-Type", request.ContentType.Value);
+                    }
 
                     httpRequestMessage.Content = requestContent;
                 }
@@ -168,10 +171,10 @@ namespace Halforbit.ApiClient
                             requestedUrl: requestUrl));
                 }
 
-                if (services.AuthenticationStrategy?.ShouldReauthenticate(httpResponseMessage.StatusCode) ?? false && 
+                if (services.AuthorizationStrategy?.ShouldReauthorize(httpResponseMessage.StatusCode) ?? false && 
                     reauthorizeRetriesRemaining > 0)
                 {
-                    await services.AuthenticationStrategy.Reauthenticate();
+                    await services.AuthorizationStrategy.Reauthorize();
 
                     reauthorizeRetriesRemaining--;
 
@@ -200,10 +203,6 @@ namespace Halforbit.ApiClient
                         values.FirstOrDefault() :
                         null;
 
-                var contentType = !string.IsNullOrWhiteSpace(contentTypeValue) ?
-                    new System.Net.Mime.ContentType(contentTypeValue) :
-                    null;
-
                 var responseContent = new StreamedContent(await httpResponseMessage.Content.ReadAsStreamAsync());
 
                 return await ApplyAfterResponseHandlers(
@@ -215,11 +214,7 @@ namespace Halforbit.ApiClient
                             kv => kv.Key,
                             kv => kv.Value.First()),
                         content: responseContent,
-                        contentType: contentType == null ? null : new ContentType(
-                            boundary: contentType.Boundary,
-                            charSet: contentType.CharSet,
-                            mediaType: contentType.MediaType,
-                            name: contentType.Name),
+                        contentType: contentTypeValue,
                         contentEncoding: null,
                         isSuccess: 
                             (int)httpResponseMessage.StatusCode >= 200 &&
@@ -260,7 +255,7 @@ namespace Halforbit.ApiClient
             {
                 for(var i = 0; i < count; i++)
                 {
-                    response = await handlers[i](request, response);
+                    response = await handlers[i](response);
                 }
             }
 

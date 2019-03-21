@@ -7,7 +7,7 @@ namespace Halforbit.ApiClient
     {
         public RequestServices(
             IRequestClient requestClient,
-            IAuthenticationStrategy authenticationStrategy,
+            IAuthorizationStrategy authorizationStrategy,
             IRetryStrategy retryStrategy,
             ISerializer requestSerializer,
             IDeserializer responseDeserializer,
@@ -16,7 +16,7 @@ namespace Halforbit.ApiClient
         {
             RequestClient = requestClient;
 
-            AuthenticationStrategy = authenticationStrategy;
+            AuthorizationStrategy = authorizationStrategy;
 
             RetryStrategy = retryStrategy;
 
@@ -31,7 +31,7 @@ namespace Halforbit.ApiClient
 
         public IRequestClient RequestClient { get; }
 
-        public IAuthenticationStrategy AuthenticationStrategy { get; }
+        public IAuthorizationStrategy AuthorizationStrategy { get; }
 
         public IRetryStrategy RetryStrategy { get; }
 
@@ -45,7 +45,7 @@ namespace Halforbit.ApiClient
 
         public static RequestServices Default => new RequestServices(
             requestClient: Halforbit.ApiClient.RequestClient.Instance,
-            authenticationStrategy: default,
+            authorizationStrategy: default,
             retryStrategy: default,
             requestSerializer: JsonSerializer.Instance,
             responseDeserializer: JsonDeserializer.Instance,
@@ -56,8 +56,6 @@ namespace Halforbit.ApiClient
             Request request,
             string requestUrl);
 
-        public delegate Task<Response> AfterResponseDelegate(
-            Request request,
-            Response response);
+        public delegate Task<Response> AfterResponseDelegate(Response response);
     }
 }
