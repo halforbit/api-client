@@ -114,7 +114,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers
-                    .With(new RequestServices.BeforeRequestDelegate(handler)),
+                    .WithFirst(new RequestServices.BeforeRequestDelegate(handler)),
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -134,7 +134,7 @@ namespace Halforbit.ApiClient
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers
-                    .With(new RequestServices.AfterResponseDelegate(handler))));
+                    .WithFirst(new RequestServices.AfterResponseDelegate(handler))));
         }
 
         public static Request JsonRequestSerialization(

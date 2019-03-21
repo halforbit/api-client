@@ -20,6 +20,21 @@ namespace Halforbit.ApiClient
             return r;
         }
 
+        public static IReadOnlyList<TValue> WithFirst<TValue>(
+            this IReadOnlyList<TValue> source,
+            TValue value)
+        {
+            var count = source.Count;
+
+            var r = new List<TValue>(count + 1);
+
+            r.Add(value);
+
+            r.AddRange(source);
+            
+            return r;
+        }
+
         public static IReadOnlyDictionary<TKey, TValue> With<TKey, TValue>(
             this IReadOnlyDictionary<TKey, TValue> source,
             TKey key,
