@@ -5,6 +5,8 @@ namespace Halforbit.ApiClient
 {
     public class PeekStream : Stream, IDisposable
     {
+        static readonly int _bufferSize = 4096;
+
         readonly Stream _sourceStream;
 
         readonly int _maxPeekLength;
@@ -20,19 +22,27 @@ namespace Halforbit.ApiClient
             _maxPeekLength = maxPeekLength;
         }
 
-        private void PeekData(Stream source)
+        private void PeekData()
         {
             _peekStream = new MemoryStream();
 
             var bytesPeeked = ReadUpTo(
-                source,
+                _sourceStream,
                 _peekStream,
                 _maxPeekLength);
 
             _peekStream.Seek(0, SeekOrigin.Begin);
         }
 
-        public byte[] PeekedData => _peekStream.ToArray();
+        public byte[] PeekedData
+        {
+            get
+            {
+                if (_peekStream == null) PeekData();
+
+                return _peekStream.ToArray();
+            }
+        }
 
         public override bool CanRead => true;
 
@@ -57,6 +67,8 @@ namespace Halforbit.ApiClient
 
         public override int Read(byte[] buffer, int offset, int count)
         {
+            if (_peekStream == null) PeekData();
+
             var bytesRead = 0;
 
             if (_position < _peekStream.Length)
@@ -84,7 +96,7 @@ namespace Halforbit.ApiClient
             Stream dest,
             int maxLength)
         {
-            var buffer = new byte[4096];
+            var buffer = new byte[_bufferSize];
 
             var offset = 0;
 
@@ -92,13 +104,15 @@ namespace Halforbit.ApiClient
 
             while (offset < maxLength)
             {
-                var bytesRead = source.Read(buffer, offset, maxLength - offset);
+                var bytesRead = source.Read(buffer, 0, Math.Min(_bufferSize, maxLength - offset));
 
                 totalBytesRead += bytesRead;
 
                 if (bytesRead == 0) break;
 
                 offset += bytesRead;
+
+                dest.Write(buffer, 0, bytesRead);
             }
 
             dest.Flush();
