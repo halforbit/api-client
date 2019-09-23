@@ -36,7 +36,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -69,7 +69,7 @@ namespace Halforbit.ApiClient.Tests
                 .ToList());
 
             Assert.Equal(
-                @"[{""Id"":1,""FirstName"":""George"",""LastName"":""Bluth"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""Id"":2,""FirstName"":""Janet"",""LastName"":""Weaver"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""Id"":3,""FirstName"":""Emma"",""LastName"":""Wong"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]",
+                @"[{""Id"":1,""FirstName"":""George"",""LastName"":""Bluth"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""Id"":2,""FirstName"":""Janet"",""LastName"":""Weaver"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""Id"":3,""FirstName"":""Emma"",""LastName"":""Wong"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""Id"":4,""FirstName"":""Eve"",""LastName"":""Holt"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""Id"":5,""FirstName"":""Charles"",""LastName"":""Morris"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""Id"":6,""FirstName"":""Tracey"",""LastName"":""Ramos"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -104,7 +104,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authorizationCalled);
@@ -145,7 +145,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authorizationCalled);
@@ -184,7 +184,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -221,7 +221,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":3,""total"":12,""total_pages"":4,""data"":[{""id"":1,""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""}]}",
+                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]}",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -247,7 +247,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""data"":{""id"":2,""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""}}",
+                @"{""data"":{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""}}",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
