@@ -430,11 +430,11 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task GetRequestTimeout()
         {
-            var request = Request.Create("https://doesnt.exist")
+            var request = Request.Create("https://postman-echo.com")
                 .AllowAnyStatusCode()
                 .Timeout(TimeSpan.FromMilliseconds(1));
 
-            var response = await request.GetAsync("something/somewhere");
+            var response = await request.GetAsync("delay/60");
 
             Assert.Equal(0, (int)response.StatusCode);
 
@@ -447,7 +447,7 @@ namespace Halforbit.ApiClient.Tests
             Assert.Null(response.Exception);
 
             Assert.Equal(
-                "https://doesnt.exist/something/somewhere",
+                "https://postman-echo.com/delay/60",
                 response.RequestedUrl);
         }
 
@@ -456,7 +456,7 @@ namespace Halforbit.ApiClient.Tests
         {
             int retryCount = 0;
 
-            var request = Request.Create("https://doesnt.exist")
+            var request = Request.Create("https://postman-echo.com")
                 .Retry(retryCount: 4, retryOnTimeout: true)
                 .BeforeRetry((r, u, s, c) =>
                 {
@@ -470,7 +470,7 @@ namespace Halforbit.ApiClient.Tests
 
             try
             {
-                var response = await request.GetAsync("something/somewhere");
+                var response = await request.GetAsync("delay/60");
             }
             catch(ApiRequestException)
             {
