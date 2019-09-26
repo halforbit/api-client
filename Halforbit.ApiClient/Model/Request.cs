@@ -76,7 +76,9 @@ namespace Halforbit.ApiClient
         public TimeSpan Timeout { get; }
 
         public IReadOnlyCollection<HttpStatusCode> AllowedStatusCodes { get; }
+
         public IReadOnlyCollection<HttpStatusCode> DefaultContentStatusCodes { get; }
+
         public IReadOnlyDictionary<string, object> Tags { get; }
 
         public static Request Default => new Request(

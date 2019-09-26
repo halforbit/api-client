@@ -89,7 +89,7 @@ namespace Halforbit.ApiClient
         public static bool ContentIsText(
             this Response response)
         {
-            var mediaType = response.ContentType?.MediaType;
+            var mediaType = response.ContentType?.MediaType ?? string.Empty;
 
             return mediaType.StartsWith("text/") || mediaType == "application/json";
         }
