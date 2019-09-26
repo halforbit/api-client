@@ -31,6 +31,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -54,6 +55,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -77,6 +79,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -99,6 +102,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -122,6 +126,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -188,6 +193,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 

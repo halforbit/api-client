@@ -17,7 +17,12 @@ namespace Halforbit.ApiClient
         public static byte[] ByteContent(
             this Response response)
         {
-            if(response.Content is BufferedContent bufferedContent)
+            if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
+            {
+                return default;
+            }
+
+            if (response.Content is BufferedContent bufferedContent)
             {
                 return bufferedContent.Bytes;
             }
@@ -33,12 +38,22 @@ namespace Halforbit.ApiClient
         public static Stream StreamContent(
             this Response response)
         {
+            if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
+            {
+                return default;
+            }
+
             return response.Content.GetStream();
         }
 
         public static string TextContent(
             this Response response)
         {
+            if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
+            {
+                return default;
+            }
+
             var encoding = _utf8Encoding;
 
             if (response.ContentType?.Value != null)
@@ -81,6 +96,11 @@ namespace Halforbit.ApiClient
 
         public static TContent Content<TContent>(this Response response)
         {
+            if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
+            {
+                return default;
+            }
+
             return response.Request.Services.ResponseDeserializer
                 .Deserialize<TContent>(response.Content.GetStream());
         }
@@ -126,13 +146,22 @@ namespace Halforbit.ApiClient
             this Response response,
             Func<JToken, TResult> map)
         {
-            return map(response.Content<JToken>());
+            var content = !response.Request.DefaultContentStatusCodes.Contains(response.StatusCode) ?
+                response.Content<JToken>() : 
+                null;
+
+            return map(content);
         }
 
         public static IReadOnlyList<TResult> MapContentArray<TResult>(
             this Response response,
             Func<JToken, TResult> map)
         {
+            if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
+            {
+                return new TResult[0];
+            }
+
             return response.Content<JArray>().Select(t => map(t)).ToList();
         }
     }

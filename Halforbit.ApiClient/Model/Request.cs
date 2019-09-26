@@ -21,6 +21,7 @@ namespace Halforbit.ApiClient
             string contentEncoding,
             TimeSpan timeout,
             IReadOnlyCollection<HttpStatusCode> allowedStatusCodes,
+            IReadOnlyCollection<HttpStatusCode> defaultContentStatusCodes,
             IReadOnlyDictionary<string, object> tags)
         {
             Services = services;
@@ -46,6 +47,8 @@ namespace Halforbit.ApiClient
             Timeout = timeout;
 
             AllowedStatusCodes = allowedStatusCodes;
+
+            DefaultContentStatusCodes = defaultContentStatusCodes;
 
             Tags = tags;
         }
@@ -73,7 +76,7 @@ namespace Halforbit.ApiClient
         public TimeSpan Timeout { get; }
 
         public IReadOnlyCollection<HttpStatusCode> AllowedStatusCodes { get; }
-
+        public IReadOnlyCollection<HttpStatusCode> DefaultContentStatusCodes { get; }
         public IReadOnlyDictionary<string, object> Tags { get; }
 
         public static Request Default => new Request(
@@ -98,6 +101,10 @@ namespace Halforbit.ApiClient
                 HttpStatusCode.ResetContent,
                 HttpStatusCode.PartialContent
             },
+            defaultContentStatusCodes: new HashSet<HttpStatusCode>
+            {
+                HttpStatusCode.NoContent
+            },
             tags: new Dictionary<string, object>(0)); 
 
         public static Request Create(
@@ -119,6 +126,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: source.ContentEncoding,
                 timeout: source.Timeout,
                 allowedStatusCodes: source.AllowedStatusCodes,
+                defaultContentStatusCodes: source.DefaultContentStatusCodes,
                 tags: source.Tags);
         }
     }

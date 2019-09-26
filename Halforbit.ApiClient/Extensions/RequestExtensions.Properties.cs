@@ -32,6 +32,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -56,6 +57,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -90,6 +92,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -112,6 +115,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -134,6 +138,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -157,6 +162,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -179,6 +185,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -201,6 +208,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -223,6 +231,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -246,6 +255,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -268,6 +278,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -290,6 +301,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -312,6 +324,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -335,6 +348,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -357,6 +371,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -379,6 +394,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -401,6 +417,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -423,6 +440,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -445,6 +463,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: contentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -485,6 +504,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -494,11 +514,11 @@ namespace Halforbit.ApiClient
         {
             request = request ?? Request.Default;
 
-            var expectedStatusCodes = new HashSet<HttpStatusCode>(request.AllowedStatusCodes);
+            var allowedStatusCodes = new HashSet<HttpStatusCode>(request.AllowedStatusCodes);
 
             foreach(var statusCode in statusCodes)
             {
-                expectedStatusCodes.Add(statusCode);
+                allowedStatusCodes.Add(statusCode);
             }
 
             return new Request(
@@ -513,7 +533,8 @@ namespace Halforbit.ApiClient
                 contentType: request.ContentType,
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
-                allowedStatusCodes: expectedStatusCodes,
+                allowedStatusCodes: allowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags);
         }
 
@@ -536,6 +557,46 @@ namespace Halforbit.ApiClient
                 .ToArray());
         }
 
+        public static Request DefaultContent(
+            this Request request,
+            params HttpStatusCode[] statusCodes)
+        {
+            request = request ?? Request.Default;
+
+            request = request.Allow(statusCodes);
+
+            var defaultContentStatusCodes = new HashSet<HttpStatusCode>(request.DefaultContentStatusCodes);
+
+            foreach(var statusCode in statusCodes)
+            {
+                defaultContentStatusCodes.Add(statusCode);
+            }
+
+            return new Request(
+                services: request.Services,
+                baseUrl: request.BaseUrl,
+                method: request.Method,
+                resource: request.Resource,
+                headers: request.Headers,
+                routeValues: request.RouteValues,
+                queryValues: request.QueryValues,
+                content: request.Content,
+                contentType: request.ContentType,
+                contentEncoding: request.ContentEncoding,
+                timeout: request.Timeout,
+                allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: defaultContentStatusCodes,
+                tags: request.Tags);
+        }
+
+        public static Request DefaultContentOnNotFound(
+            this Request request)
+        {
+            request = request ?? Request.Default;
+
+            return request.DefaultContent(HttpStatusCode.NotFound);
+        }
+
         public static Request Tag<TValue>(
             this Request request,
             string key, 
@@ -556,6 +617,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags.With(key, value));
         }
 
@@ -578,6 +640,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags.With(tags));
         }
 
@@ -600,6 +663,7 @@ namespace Halforbit.ApiClient
                 contentEncoding: request.ContentEncoding,
                 timeout: request.Timeout,
                 allowedStatusCodes: request.AllowedStatusCodes,
+                defaultContentStatusCodes: request.DefaultContentStatusCodes,
                 tags: request.Tags.With(tags));
         }
 
