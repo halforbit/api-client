@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
@@ -12,7 +13,8 @@ namespace Halforbit.ApiClient
             ISerializer requestSerializer,
             IDeserializer responseDeserializer,
             IReadOnlyList<BeforeRequestDelegate> beforeRequestHandlers,
-            IReadOnlyList<AfterResponseDelegate> afterResponseHandlers)
+            IReadOnlyList<AfterResponseDelegate> afterResponseHandlers,
+            IReadOnlyList<BeforeRetryDelegate> beforeRetryHandlers)
         {
             RequestClient = requestClient;
 
@@ -27,6 +29,8 @@ namespace Halforbit.ApiClient
             BeforeRequestHandlers = beforeRequestHandlers;
 
             AfterResponseHandlers = afterResponseHandlers;
+
+            BeforeRetryHandlers = beforeRetryHandlers;
         }
 
         public IRequestClient RequestClient { get; }
@@ -43,6 +47,8 @@ namespace Halforbit.ApiClient
 
         public IReadOnlyList<AfterResponseDelegate> AfterResponseHandlers { get; }
 
+        public IReadOnlyList<BeforeRetryDelegate> BeforeRetryHandlers { get; }
+
         public static RequestServices Default => new RequestServices(
             requestClient: Halforbit.ApiClient.RequestClient.Instance,
             authorizationStrategy: default,
@@ -50,12 +56,19 @@ namespace Halforbit.ApiClient
             requestSerializer: JsonSerializer.Instance,
             responseDeserializer: JsonDeserializer.Instance,
             beforeRequestHandlers: new List<BeforeRequestDelegate>(0),
-            afterResponseHandlers: new List<AfterResponseDelegate>(0));
+            afterResponseHandlers: new List<AfterResponseDelegate>(0),
+            beforeRetryHandlers: new List<BeforeRetryDelegate>(0));
 
         public delegate Task<(Request request, string requestUrl)> BeforeRequestDelegate(
             Request request,
             string requestUrl);
 
         public delegate Task<Response> AfterResponseDelegate(Response response);
+
+        public delegate Task<(Request Request, string RequestUrl, bool ShouldRetry)> BeforeRetryDelegate(
+            Request request,
+            string requestUrl,
+            HttpStatusCode statusCode,
+            int retryCount);
     }
 }

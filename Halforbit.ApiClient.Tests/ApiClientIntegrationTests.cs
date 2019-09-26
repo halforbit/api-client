@@ -1,6 +1,7 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -448,6 +449,77 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal(
                 "https://doesnt.exist/something/somewhere",
                 response.RequestedUrl);
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task GetRetryTimeout()
+        {
+            int retryCount = 0;
+
+            var request = Request.Create("https://doesnt.exist")
+                .Retry(retryCount: 4, retryOnTimeout: true)
+                .BeforeRetry((r, u, s, c) =>
+                {
+                    retryCount++;
+
+                    return Task.FromResult((r, u, true));
+                })
+                .Timeout(TimeSpan.FromMilliseconds(1));
+
+            var timer = Stopwatch.StartNew();
+
+            try
+            {
+                var response = await request.GetAsync("something/somewhere");
+            }
+            catch(ApiRequestException)
+            {
+            }
+            finally
+            {
+                var elapsed = timer.Elapsed;
+
+                Assert.True(elapsed >= TimeSpan.FromSeconds(0 + 1 + 2 + 4));
+                
+                Assert.True(elapsed < TimeSpan.FromSeconds(0 + 1 + 2 + 4 + 8));
+
+                Assert.Equal(4, retryCount);
+            }
+        }
+
+        [Fact, Trait("Type", "Integration")]
+        public async Task GetRetryInternalServerError()
+        {
+            int retryCount = 0;
+
+            var request = Request.Create("https://httpstat.us")
+                .Retry(retryCount: 4)
+                .BeforeRetry((r, u, s, c) =>
+                {
+                    retryCount++;
+
+                    return Task.FromResult((r, u, true));
+                });
+
+            var timer = Stopwatch.StartNew();
+
+            try
+            {
+                var response = await request.GetAsync("500");
+            }
+            catch (ApiRequestException)
+            {
+            }
+            finally
+            {
+                var elapsed = timer.Elapsed;
+
+                Assert.True(elapsed >= TimeSpan.FromSeconds(0 + 1 + 2 + 4));
+
+                Assert.True(elapsed < TimeSpan.FromSeconds(0 + 1 + 2 + 4 + 8));
+
+                Assert.Equal(4, retryCount);
+            }
         }
     }
 }

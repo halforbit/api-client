@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
@@ -20,6 +21,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -39,6 +41,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -57,6 +60,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -75,6 +79,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -96,6 +101,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -115,6 +121,27 @@ namespace Halforbit.ApiClient
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers
                     .WithFirst(new RequestServices.BeforeRequestDelegate(handler)),
+                beforeRetryHandlers: services.BeforeRetryHandlers,
+                afterResponseHandlers: services.AfterResponseHandlers));
+        }
+
+        public static Request BeforeRetry(
+            this Request request,
+            Func<Request, string, HttpStatusCode, int, Task<(Request, string, bool)>> handler)
+        {
+            request = request ?? Request.Default;
+
+            var services = request.Services;
+
+            return request.Services(new RequestServices(
+                requestClient: services.RequestClient,
+                authorizationStrategy: services.AuthorizationStrategy,
+                retryStrategy: services.RetryStrategy,
+                requestSerializer: services.RequestSerializer,
+                responseDeserializer: services.ResponseDeserializer,
+                beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers
+                    .WithFirst(new RequestServices.BeforeRetryDelegate(handler)),
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -133,6 +160,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers
                     .WithFirst(new RequestServices.AfterResponseDelegate(handler))));
         }
@@ -151,6 +179,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: JsonSerializer.Instance,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
@@ -168,6 +197,7 @@ namespace Halforbit.ApiClient
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: JsonDeserializer.Instance,
                 beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
     }
