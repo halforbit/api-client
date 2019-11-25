@@ -10,6 +10,8 @@ namespace Halforbit.ApiClient
         static readonly IReadOnlyCollection<HttpStatusCode> _retryableStatusCodes =
             new HashSet<HttpStatusCode>
             {
+                0,
+
                 HttpStatusCode.InternalServerError,
 
                 HttpStatusCode.BadGateway,
