@@ -405,6 +405,24 @@ namespace Halforbit.ApiClient.Tests
         }
 
         [Fact, Trait("Type", "Integration")]
+        public async Task GetImageHead()
+        {
+            var request = Request.Create("https://s3.amazonaws.com");
+
+            var response = await request.HeadAsync("uifaces/faces/twitter/calebogden/128.jpg");
+
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+            var date = response.Headers.Date();
+
+            Assert.True(date.HasValue);
+
+            Assert.Equal(
+                "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg",
+                response.RequestedUrl);
+        }
+
+        [Fact, Trait("Type", "Integration")]
         public async Task GetServerUnreachable()
         {
             var request = Request.Create("https://doesnt.exist")

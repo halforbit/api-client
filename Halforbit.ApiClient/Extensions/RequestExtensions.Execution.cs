@@ -60,5 +60,14 @@ namespace Halforbit.ApiClient
                 .Method("DELETE")
                 .ExecuteAsync();
         }
+
+        public static async Task<Response> HeadAsync(
+            this Request request,
+            string resource = default)
+        {
+            return await (resource == null ? request : request.Resource(resource))
+                .Method("HEAD")
+                .ExecuteAsync();
+        }
     }
 }
