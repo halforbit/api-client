@@ -104,6 +104,14 @@ namespace Halforbit.ApiClient.Tests
         }
 
         [Fact, Trait("Type", "Unit")]
+        public void RequestBearerTokenAuthorizationWithBaseUrl()
+        {
+            var request = default(Request).BearerTokenAuthorizationWithBaseUrl(() => null);
+
+            Assert.True(request.Services.AuthorizationStrategy is BearerTokenAuthorizationWithBaseUrlStrategy);
+        }
+
+        [Fact, Trait("Type", "Unit")]
         public void RequestCookieAuthorization()
         {
             var request = default(Request).CookieAuthorization(() => null);

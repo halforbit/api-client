@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
     public class BearerTokenAuthorizationStrategy : IAuthorizationStrategy
     {
+        readonly SemaphoreSlim _semaphore = new SemaphoreSlim(1, 1);
+
         readonly Func<Task<IAuthorizationToken>> _getAuthorizationToken;
 
         IAuthorizationToken _authorizationToken;
@@ -23,20 +26,41 @@ namespace Halforbit.ApiClient
 
         public async Task<Request> Apply(Request request)
         {
-            var expireTime = _authorizationToken?.ExpireTime;
+            if (!AuthorizationTokenValid)
+            {
+                try
+                {
+                    await _semaphore.WaitAsync();
 
-            if (_authorizationToken == null ||
-                (expireTime.HasValue && expireTime.Value < DateTime.UtcNow))
-            { 
-                _authorizationToken = await _getAuthorizationToken();
+                    if (!AuthorizationTokenValid)
+                    {
+                        _authorizationToken = await _getAuthorizationToken();
+                    }
+                }
+                finally
+                {
+                    _semaphore.Release();
+                }
             }
 
             return request.Header("Authorization", $"Bearer {_authorizationToken.Content}");
         }
 
+        bool AuthorizationTokenValid => _authorizationToken != null &&
+            (!_authorizationToken.ExpireTime.HasValue || _authorizationToken.ExpireTime.Value > DateTime.UtcNow);
+
         public async Task Reauthorize()
         {
-            _authorizationToken = await _getAuthorizationToken();
+            try
+            {
+                await _semaphore.WaitAsync();
+
+                _authorizationToken = await _getAuthorizationToken();
+            }
+            finally
+            {
+                _semaphore.Release();
+            }
         }
     }
 }

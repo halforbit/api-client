@@ -1,11 +1,17 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.168
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30225.117
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Halforbit.ApiClient", "Halforbit.ApiClient\Halforbit.ApiClient.csproj", "{9C88ACA4-5227-4010-BBC2-9F38FFE56AFD}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Halforbit.ApiClient.Tests", "Halforbit.ApiClient.Tests\Halforbit.ApiClient.Tests.csproj", "{614A31F7-3D4D-49F7-8874-4FD51E298ACE}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5A302748-39B3-4737-994F-48D170C46DF6}"
+	ProjectSection(SolutionItems) = preProject
+		readme.md = readme.md
+		release-notes.md = release-notes.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

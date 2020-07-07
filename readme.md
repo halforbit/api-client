@@ -261,6 +261,17 @@ public class MyAuthorizationClient
 }
 ```
 
+If the service you are authorizing against includes the base URL authorized requests should use in its response, you can use `.BearerTokenAuthorizationWithBaseUrl()`:
+
+```csharp
+request.BearerTokenAuthorizationWithBaseUrl(async () => 
+{
+    var authResponse = await _myAuthorizationClient.Authorize();
+
+    return (authResponse.BearerToken, authResponse.BaseUrl);
+});
+```
+
 ### Cookie Authorization
 
 Cookie authorization is similar to bearer token authorization. Just provide a lambda to retrieve the cookie when it is needed:

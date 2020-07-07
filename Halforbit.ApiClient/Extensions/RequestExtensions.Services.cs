@@ -64,6 +64,25 @@ namespace Halforbit.ApiClient
                 afterResponseHandlers: services.AfterResponseHandlers));
         }
 
+        public static Request BearerTokenAuthorizationWithBaseUrl(
+            this Request request,
+            Func<Task<(IAuthorizationToken BearerToken, string BaseUrl)>> getBearerTokenWithBaseUrl)
+        {
+            request = request ?? Request.Default;
+
+            var services = request.Services;
+
+            return request.Services(new RequestServices(
+                requestClient: services.RequestClient,
+                authorizationStrategy: new BearerTokenAuthorizationWithBaseUrlStrategy(getBearerTokenWithBaseUrl),
+                retryStrategy: services.RetryStrategy,
+                requestSerializer: services.RequestSerializer,
+                responseDeserializer: services.ResponseDeserializer,
+                beforeRequestHandlers: services.BeforeRequestHandlers,
+                beforeRetryHandlers: services.BeforeRetryHandlers,
+                afterResponseHandlers: services.AfterResponseHandlers));
+        }
+
         public static Request CookieAuthorization(
             this Request request,
             Func<Task<IAuthorizationToken>> getCookie)
