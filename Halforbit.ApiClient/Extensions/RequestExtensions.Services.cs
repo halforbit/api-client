@@ -1,6 +1,7 @@
 ﻿using Halforbit.ApiClient.Implementation;
 using System;
 using System.Net;
+using System.Net.Http;
 using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
@@ -12,8 +13,13 @@ namespace Halforbit.ApiClient
             IRequestClient requestClient)
         {
             request = request ?? Request.Default;
-
             var services = request.Services;
+            
+            // Dispose the old RequestClient so we don't leak resources.
+            if (!ReferenceEquals(requestClient, services.RequestClient))
+            {
+                services.RequestClient?.Dispose();
+            }
 
             return request.Services(new RequestServices(
                 requestClient: requestClient,
@@ -293,6 +299,18 @@ namespace Halforbit.ApiClient
                 beforeRequestHandlers: services.BeforeRequestHandlers,
                 beforeRetryHandlers: services.BeforeRetryHandlers,
                 afterResponseHandlers: services.AfterResponseHandlers));
+        }
+
+        /// <summary>
+        /// Can be used to override the default HttpClient that would be used internally to process the requests.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="client"></param>
+        /// <returns></returns>
+        public static Request HttpClient(this Request request, HttpClient client)
+        {
+            request = request ?? Request.Default;
+            return request.RequestClient(new RequestClient(client));
         }
     }
 }

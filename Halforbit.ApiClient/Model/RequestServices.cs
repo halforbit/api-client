@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
 namespace Halforbit.ApiClient
 {
-    public class RequestServices
+    public class RequestServices : IDisposable
     {
         public RequestServices(
             IRequestClient requestClient,
@@ -50,7 +51,7 @@ namespace Halforbit.ApiClient
         public IReadOnlyList<BeforeRetryDelegate> BeforeRetryHandlers { get; }
 
         public static RequestServices Default => new RequestServices(
-            requestClient: Halforbit.ApiClient.RequestClient.Instance,
+            requestClient: Halforbit.ApiClient.RequestClient.Instance, 
             authorizationStrategy: default,
             retryStrategy: default,
             requestSerializer: JsonSerializer.Instance,
@@ -70,5 +71,10 @@ namespace Halforbit.ApiClient
             string requestUrl,
             HttpStatusCode statusCode,
             int retryCount);
+
+        public void Dispose()
+        {
+            RequestClient.Dispose();
+        }
     }
 }

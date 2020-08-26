@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Halforbit.ApiClient
 {
-    public class Request
+    public class Request : IDisposable
     {
         static readonly IReadOnlyDictionary<string, string> _emptyDictionary = new Dictionary<string, string>(0);
 
@@ -130,6 +130,11 @@ namespace Halforbit.ApiClient
                 allowedStatusCodes: source.AllowedStatusCodes,
                 defaultContentStatusCodes: source.DefaultContentStatusCodes,
                 tags: source.Tags);
+        }
+
+        public void Dispose()
+        {
+            Services.Dispose();
         }
     }
 }

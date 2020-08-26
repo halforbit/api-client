@@ -11,14 +11,28 @@ namespace Halforbit.ApiClient
 {
     public class RequestClient : IRequestClient
     {
-        static readonly HttpClient _httpClient = new HttpClient(new HttpClientHandler
-            {
-                AllowAutoRedirect = false
-            })
-        {
-            Timeout = Timeout.InfiniteTimeSpan
-        };
+        readonly Lazy<HttpClient> _httpClient;
 
+        internal RequestClient(HttpClient existingClient = null)
+        {
+            if (existingClient != null)
+            {
+                _httpClient = new Lazy<HttpClient>(() => existingClient);
+                // We want to ensure that we trigger this Lazy to flag that it is created.
+                var _ = _httpClient.Value;
+            }
+            else
+            {
+                _httpClient = new Lazy<HttpClient>(() => new HttpClient(new HttpClientHandler
+                {
+                    AllowAutoRedirect = false
+                })
+                {
+                    Timeout = Timeout.InfiniteTimeSpan
+                });
+            }
+        }
+        
         public static IRequestClient Instance => new RequestClient();
 
         public async Task<Response> ExecuteAsync(Request request)
@@ -100,7 +114,7 @@ namespace Halforbit.ApiClient
                             Timeout.InfiniteTimeSpan,
                         cancellationTokenSource.Token);
 
-                    var sendTask = _httpClient.SendAsync(
+                    var sendTask = _httpClient.Value.SendAsync(
                         httpRequestMessage, 
                         HttpCompletionOption.ResponseHeadersRead,
                         cancellationTokenSource.Token);
@@ -335,6 +349,14 @@ namespace Halforbit.ApiClient
             }
 
             return response;
+        }
+
+        public void Dispose()
+        {
+            if (_httpClient.IsValueCreated)
+            {
+                _httpClient.Value.Dispose();
+            }
         }
     }
 }
