@@ -532,10 +532,8 @@ namespace Halforbit.ApiClient.Tests
             {
                 var elapsed = timer.Elapsed;
 
-                Assert.True(elapsed >= TimeSpan.FromSeconds(0 + 1 + 2 + 4));
-
-                Assert.True(elapsed < TimeSpan.FromSeconds(0 + 1 + 2 + 4 + 8));
-
+                Assert.InRange(elapsed, TimeSpan.FromSeconds(0 + 1 + 2 + 4), TimeSpan.FromSeconds(0 + 1 + 2 + 4 + 9));
+                
                 Assert.Equal(4, retryCount);
             }
         }
