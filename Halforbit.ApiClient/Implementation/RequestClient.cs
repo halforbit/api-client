@@ -100,7 +100,7 @@ namespace Halforbit.ApiClient
                             Timeout.InfiniteTimeSpan,
                         cancellationTokenSource.Token);
 
-                    var sendTask = _httpClient.SendAsync(
+                    var sendTask = GetHttpClient(request).SendAsync(
                         httpRequestMessage, 
                         HttpCompletionOption.ResponseHeadersRead,
                         cancellationTokenSource.Token);
@@ -336,5 +336,7 @@ namespace Halforbit.ApiClient
 
             return response;
         }
+
+        protected virtual HttpClient GetHttpClient(Request request) => _httpClient;
     }
 }
