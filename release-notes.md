@@ -4,6 +4,8 @@
 
 ### 2020-08-27
 
+#### 1.0.42
+
 - Added a virtual `GetHttpClient` method to `RequestClient`, to allow sub classes to override the provisioning of `HttpClient`.
 
 ### 2020-07-07
