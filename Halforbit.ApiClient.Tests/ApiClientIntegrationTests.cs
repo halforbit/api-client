@@ -22,6 +22,9 @@ namespace Halforbit.ApiClient.Tests
     public class ApiClientIntegrationTests
     {
         static readonly Request _request = Request.Create(baseUrl: "https://reqres.in/api");
+
+        private static readonly string UsersResponse =
+            @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://reqres.in/img/faces/1-image.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://reqres.in/img/faces/3-image.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://reqres.in/img/faces/4-image.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://reqres.in/img/faces/5-image.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://reqres.in/img/faces/6-image.jpg""}],""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}";
         
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers()
@@ -37,7 +40,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}],""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                UsersResponse,
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -70,7 +73,7 @@ namespace Halforbit.ApiClient.Tests
                 .ToList());
 
             Assert.Equal(
-                @"[{""Id"":1,""FirstName"":""George"",""LastName"":""Bluth"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""Id"":2,""FirstName"":""Janet"",""LastName"":""Weaver"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""Id"":3,""FirstName"":""Emma"",""LastName"":""Wong"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""Id"":4,""FirstName"":""Eve"",""LastName"":""Holt"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""Id"":5,""FirstName"":""Charles"",""LastName"":""Morris"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""Id"":6,""FirstName"":""Tracey"",""LastName"":""Ramos"",""Avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}]",
+                @"[{""Id"":1,""FirstName"":""George"",""LastName"":""Bluth"",""Avatar"":""https://reqres.in/img/faces/1-image.jpg""},{""Id"":2,""FirstName"":""Janet"",""LastName"":""Weaver"",""Avatar"":""https://reqres.in/img/faces/2-image.jpg""},{""Id"":3,""FirstName"":""Emma"",""LastName"":""Wong"",""Avatar"":""https://reqres.in/img/faces/3-image.jpg""},{""Id"":4,""FirstName"":""Eve"",""LastName"":""Holt"",""Avatar"":""https://reqres.in/img/faces/4-image.jpg""},{""Id"":5,""FirstName"":""Charles"",""LastName"":""Morris"",""Avatar"":""https://reqres.in/img/faces/5-image.jpg""},{""Id"":6,""FirstName"":""Tracey"",""LastName"":""Ramos"",""Avatar"":""https://reqres.in/img/faces/6-image.jpg""}]",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -105,7 +108,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}],""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                UsersResponse,
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authorizationCalled);
@@ -146,7 +149,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}],""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                UsersResponse,
                 JsonConvert.SerializeObject(result));
 
             Assert.True(authorizationCalled);
@@ -185,7 +188,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}],""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                UsersResponse,
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -222,7 +225,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/olegpogodaev/128.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/marcoramires/128.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/stephenmoon/128.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/bigmancho/128.jpg""}],""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                UsersResponse,
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -248,7 +251,7 @@ namespace Halforbit.ApiClient.Tests
             var result = response.Content<JObject>();
 
             Assert.Equal(
-                @"{""data"":{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://s3.amazonaws.com/uifaces/faces/twitter/josephstein/128.jpg""},""ad"":{""company"":""StatusCode Weekly"",""url"":""http://statuscode.org/"",""text"":""A weekly newsletter focusing on software development, infrastructure, the server, performance, and the stack end of things.""}}",
+                @"{""data"":{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}",
                 JsonConvert.SerializeObject(result));
 
             Assert.Equal(
@@ -389,28 +392,30 @@ namespace Halforbit.ApiClient.Tests
         [Fact, Trait("Type", "Integration")]
         public async Task GetImage()
         {
-            var request = Request.Create("https://s3.amazonaws.com");
+            var request = Request.Create("https://reqres.in");
 
-            var response = await request.GetAsync("uifaces/faces/twitter/calebogden/128.jpg");
+            var response = await request
+                .GetAsync("img/faces/1-image.jpg");
 
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
             Assert.Equal("image/jpeg", response.ContentType.MediaType);
 
-            Assert.Equal(3468, response.ByteContent().Length);
+            Assert.Equal(4324, response.ByteContent().Length);
 
             Assert.Equal(
-                "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg",
+                "https://reqres.in/img/faces/1-image.jpg",
                 response.RequestedUrl);
         }
 
         [Fact, Trait("Type", "Integration")]
         public async Task GetImageHead()
         {
-            var request = Request.Create("https://s3.amazonaws.com");
+            var request = Request.Create("https://reqres.in");
 
-            var response = await request.HeadAsync("uifaces/faces/twitter/calebogden/128.jpg");
-
+            var response = await request
+                .HeadAsync("img/faces/1-image.jpg");
+            
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             
             var date = response.Headers.Date();
@@ -418,7 +423,7 @@ namespace Halforbit.ApiClient.Tests
             Assert.True(date.HasValue);
 
             Assert.Equal(
-                "https://s3.amazonaws.com/uifaces/faces/twitter/calebogden/128.jpg",
+                "https://reqres.in/img/faces/1-image.jpg",
                 response.RequestedUrl);
         }
 
@@ -450,7 +455,7 @@ namespace Halforbit.ApiClient.Tests
         {
             var request = Request.Create("https://postman-echo.com")
                 .AllowAnyStatusCode()
-                .Timeout(TimeSpan.FromMilliseconds(1));
+                .Timeout(TimeSpan.FromMilliseconds(50));
 
             var response = await request.GetAsync("delay/60");
 
@@ -482,7 +487,7 @@ namespace Halforbit.ApiClient.Tests
 
                     return Task.FromResult((r, u, true));
                 })
-                .Timeout(TimeSpan.FromMilliseconds(1));
+                .Timeout(TimeSpan.FromMilliseconds(50));
 
             var timer = Stopwatch.StartNew();
 
@@ -521,23 +526,15 @@ namespace Halforbit.ApiClient.Tests
 
             var timer = Stopwatch.StartNew();
 
-            try
-            {
-                var response = await request.GetAsync("500");
-            }
-            catch (ApiRequestException)
-            {
-            }
-            finally
-            {
-                var elapsed = timer.Elapsed;
+            await Assert.ThrowsAsync<ApiRequestException>(async () => await request.GetAsync("500"));
 
-                Assert.True(elapsed >= TimeSpan.FromSeconds(0 + 1 + 2 + 4));
+            var elapsed = timer.Elapsed;
 
-                Assert.True(elapsed < TimeSpan.FromSeconds(0 + 1 + 2 + 4 + 8));
+            Assert.True(elapsed >= TimeSpan.FromSeconds(0 + 2 + 4 + 8));
 
-                Assert.Equal(4, retryCount);
-            }
+            Assert.True(elapsed < TimeSpan.FromSeconds(0 + 2 + 4 + 8 + 16));
+
+            Assert.Equal(4, retryCount);
         }
     }
 }
