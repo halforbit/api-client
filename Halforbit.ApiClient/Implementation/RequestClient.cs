@@ -347,7 +347,7 @@ namespace Halforbit.ApiClient
 
             return response;
         }
-        
+
         protected virtual HttpClient GetHttpClient(Request request) => _httpClient;
         
         private struct InternalResponse

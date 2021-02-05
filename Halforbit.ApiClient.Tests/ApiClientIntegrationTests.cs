@@ -510,7 +510,7 @@ namespace Halforbit.ApiClient.Tests
                 Assert.Equal(4, retryCount);
             }
         }
-        
+
         [Fact, Trait("Type", "Integration")]
         public async Task GetRetryInternalServerError()
         {
