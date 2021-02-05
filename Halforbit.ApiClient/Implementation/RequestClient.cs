@@ -41,7 +41,7 @@ namespace Halforbit.ApiClient
 
                 cancellationToken.ThrowIfCancellationRequested();
 
-                var requestResult = await ExecuteRequest(GetHttpClient(request), httpRequestMessage, request.Timeout, cancellationToken);
+                var requestResult = await ExecuteRequestAsync(GetHttpClient(request), httpRequestMessage, request.Timeout, cancellationToken);
 
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -121,7 +121,7 @@ namespace Halforbit.ApiClient
             return (request, requestUrl, httpRequestMessage);
         }
 
-        static async Task<InternalResponse> ExecuteRequest(
+        static async Task<InternalResponse> ExecuteRequestAsync(
             HttpClient client,
             HttpRequestMessage httpRequestMessage,
             TimeSpan perRequestTimeout,
