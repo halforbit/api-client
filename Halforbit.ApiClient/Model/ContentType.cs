@@ -33,6 +33,11 @@ namespace Halforbit.ApiClient
 
         public static implicit operator ContentType(string str)
         {
+            if (str == null)
+            {
+                return null;
+            }
+            
             var contentType = !string.IsNullOrWhiteSpace(str) ?
                 new System.Net.Mime.ContentType(str) :
                 null;

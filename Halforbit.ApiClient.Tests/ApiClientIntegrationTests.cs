@@ -4,6 +4,7 @@ using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -382,7 +383,7 @@ namespace Halforbit.ApiClient.Tests
                 HttpStatusCode.NoContent,
                 response.StatusCode);
 
-            Assert.Null(response.ContentType.Value);
+            Assert.Null(response.ContentType);
 
             Assert.Equal(
                 "https://reqres.in/api/users/2",
@@ -509,7 +510,7 @@ namespace Halforbit.ApiClient.Tests
                 Assert.Equal(4, retryCount);
             }
         }
-
+        
         [Fact, Trait("Type", "Integration")]
         public async Task GetRetryInternalServerError()
         {
@@ -535,6 +536,25 @@ namespace Halforbit.ApiClient.Tests
             Assert.True(elapsed < TimeSpan.FromSeconds(0 + 2 + 4 + 8 + 16));
 
             Assert.Equal(4, retryCount);
+        }
+        
+        [Fact, Trait("Type", "Integration")]
+        public async Task GetRequestCancelled()
+        {
+            var request = Request.Create("https://postman-echo.com")
+                .AllowAnyStatusCode();
+
+            var timer = Stopwatch.StartNew();
+            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+            
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await request.GetAsync("delay/60", cts.Token));
+            
+            timer.Stop();
+            var elapsed = timer.Elapsed;
+            
+            Assert.True(elapsed >= TimeSpan.FromSeconds(1));
+
+            Assert.True(elapsed < TimeSpan.FromSeconds(2));
         }
     }
 }
