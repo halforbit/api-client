@@ -13,7 +13,8 @@ namespace Halforbit.ApiClient
     {
         static readonly HttpClient _httpClient = new HttpClient(new HttpClientHandler
             {
-                AllowAutoRedirect = false
+                AllowAutoRedirect = false,
+                AutomaticDecompression = DecompressionMethods.Deflate | DecompressionMethods.GZip
             })
         {
             Timeout = Timeout.InfiniteTimeSpan
