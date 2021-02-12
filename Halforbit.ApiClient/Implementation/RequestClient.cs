@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -21,245 +22,255 @@ namespace Halforbit.ApiClient
 
         public static IRequestClient Instance => new RequestClient();
 
-        public async Task<Response> ExecuteAsync(Request request)
+        public async Task<Response> ExecuteAsync(
+            Request request,
+            CancellationToken cancellationToken = default)
+        {
+            var services = request.Services;
+            var retryContext = new RetryContext(1, services.RetryStrategy?.RetryCount ?? 0);
+
+            while (true)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var response = default(Response);
+                var requestUrl = default(string);
+                var httpRequestMessage = default(HttpRequestMessage);
+
+                (request, requestUrl, httpRequestMessage) = await BeforeRequestAsync(request);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var requestResult = await ExecuteRequestAsync(GetHttpClient(request), httpRequestMessage, request.Timeout, cancellationToken);
+
+                cancellationToken.ThrowIfCancellationRequested();
+
+                (request, requestUrl, response) = await AfterRequestAsync(request, requestUrl, requestResult, retryContext);
+
+                if (response != null)
+                {
+                    return response;
+                }
+
+                var retryInterval = services.RetryStrategy?.GetRetryTimeout(retryContext.FailureRetryCount) ?? TimeSpan.Zero;
+                if (retryInterval.TotalMilliseconds > 50)
+                {
+                    await Task.Delay(retryInterval, cancellationToken);
+                }
+            }
+        }
+
+        static async Task<(Request Request, string RequestUrl, HttpRequestMessage HttpRequestMessage)> BeforeRequestAsync(
+            Request request)
         {
             var services = request.Services;
 
-            var reauthorizeRetriesRemaining = 1;
-
-            var failRetriesRemaining = services.RetryStrategy?.RetryCount ?? 0;
-
-            var failRetryCount = 0;
-            
-            while(true)
+            if (services.AuthorizationStrategy != null)
             {
-                if(services.AuthorizationStrategy != null)
+                request = await services.AuthorizationStrategy.Apply(request);
+            }
+
+            var requestUrl = !string.IsNullOrWhiteSpace(request.BaseUrl)
+                ? $"{request.BaseUrl}/{request.Resource}"
+                : request.Resource;
+
+            foreach (var kv in request.RouteValues)
+            {
+                requestUrl = requestUrl.Replace($"{{{kv.Key}}}", kv.Value);
+            }
+
+            if (request.QueryValues.Count > 0)
+            {
+                var query = HttpUtility.ParseQueryString(string.Empty);
+
+                foreach (var kv in request.QueryValues)
                 {
-                    request = await services.AuthorizationStrategy.Apply(request);
+                    query[kv.Key] = kv.Value;
                 }
 
-                var requestUrl = !string.IsNullOrWhiteSpace(request.BaseUrl) ? 
-                    $"{request.BaseUrl}/{request.Resource}" :
-                    request.Resource;
+                requestUrl = $"{requestUrl}?{query}";
+            }
 
-                foreach (var kv in request.RouteValues)
+            (request, requestUrl) = await ApplyBeforeRequestHandlers(services.BeforeRequestHandlers,
+                request,
+                requestUrl);
+
+            var httpRequestMessage = new HttpRequestMessage(method: new HttpMethod(request.Method),
+                requestUri: requestUrl);
+
+            if (request.Headers.Count > 0)
+            {
+                foreach (var kv in request.Headers)
                 {
-                    requestUrl = requestUrl.Replace($"{{{kv.Key}}}", kv.Value);
+                    httpRequestMessage.Headers.Add(kv.Key, kv.Value);
+                }
+            }
+
+            if (request.Content != null)
+            {
+                var requestContent = new StreamContent(request.Content.GetStream());
+
+                if (!string.IsNullOrWhiteSpace(request.ContentType?.Value))
+                {
+                    requestContent.Headers.Add("Content-Type", request.ContentType.Value);
                 }
 
-                if(request.QueryValues.Count > 0)
+                httpRequestMessage.Content = requestContent;
+            }
+            
+            return (request, requestUrl, httpRequestMessage);
+        }
+
+        static async Task<InternalResponse> ExecuteRequestAsync(
+            HttpClient client,
+            HttpRequestMessage httpRequestMessage,
+            TimeSpan perRequestTimeout,
+            CancellationToken externalCancellationToken)
+        {
+            var internalCts = new CancellationTokenSource();
+            var linkedCts = default(CancellationTokenSource);
+
+            if (perRequestTimeout != TimeSpan.Zero && perRequestTimeout != Timeout.InfiniteTimeSpan)
+            {
+                internalCts.CancelAfter(perRequestTimeout);
+            }
+
+            if (externalCancellationToken != CancellationToken.None)
+            {
+                linkedCts = CancellationTokenSource.CreateLinkedTokenSource(externalCancellationToken, internalCts.Token);
+            }
+
+            try
+            {
+                var token = linkedCts?.Token ?? internalCts.Token;
+                var result = await client.SendAsync(httpRequestMessage,
+                    HttpCompletionOption.ResponseHeadersRead,
+                    token);
+
+                return new InternalResponse()
                 {
-                    var query = HttpUtility.ParseQueryString(string.Empty);
-
-                    foreach(var kv in request.QueryValues)
-                    {
-                        query[kv.Key] = kv.Value;
-                    }
-
-                    requestUrl = $"{requestUrl}?{query}";
-                }
-
-                (request, requestUrl) = await ApplyBeforeRequestHandlers(
-                    services.BeforeRequestHandlers, 
-                    request, 
-                    requestUrl);
-
-                var httpRequestMessage = new HttpRequestMessage(
-                    method: new HttpMethod(request.Method),
-                    requestUri: requestUrl);
-
-                if(request.Headers.Count > 0)
+                    ResponseMessage = result
+                };
+            }
+            catch (OperationCanceledException canceledException)
+            {
+                return new InternalResponse()
                 {
-                    foreach(var kv in request.Headers)
-                    {
-                        httpRequestMessage.Headers.Add(kv.Key, kv.Value);
-                    }
-                }
-
-                if (request.Content != null)
+                    RequestTimeout = !externalCancellationToken.IsCancellationRequested,
+                    Exception = canceledException
+                };
+            }
+            catch (Exception exception)
+            {
+                return new InternalResponse()
                 {
-                    var requestContent = new StreamContent(request.Content.GetStream());
+                    Exception = exception
+                };
+            }
+            finally
+            {
+                internalCts.Dispose();
+                linkedCts?.Dispose();
+            }
+        }
 
-                    if(!string.IsNullOrWhiteSpace(request.ContentType?.Value))
-                    {
-                        requestContent.Headers.Add("Content-Type", request.ContentType.Value);
-                    }
+        static async Task<(Request Request, string RequestUrl, Response Response)> AfterRequestAsync(
+            Request request,
+            string requestUrl,
+            InternalResponse internalResponse,
+            RetryContext retryContext)
+        {
+            var services = request.Services;
+            var responseMessage = internalResponse.ResponseMessage;
+            var contentTypeValue = default(string);
+            var responseContent = default(IContent);
+            var responseHeaders = default(IReadOnlyDictionary<string, string>);
+            var statusCode = internalResponse.ResponseMessage?.StatusCode ?? default(HttpStatusCode);
+            var success = (int) statusCode >= 200 && (int) statusCode < 300;
+            var exception = internalResponse.Exception;
+            var errorMessage = default(string);
 
-                    httpRequestMessage.Content = requestContent;
-                }
+            if (internalResponse.RequestTimeout)
+            {
+                success = false;
+                errorMessage = "Timed out while making request";
 
-                var httpResponseMessage = default(HttpResponseMessage);
-
-                try
+                // The previous code would not show the exception on timeouts.
+                exception = null; 
+                
+                var timeoutRetryEnabled = (services.RetryStrategy?.ShouldRetryOnTimeout ?? false);
+                if (timeoutRetryEnabled && retryContext.RetryFailure())
                 {
-                    var cancellationTokenSource = new CancellationTokenSource();
-
-                    var timeoutTask = Task.Delay(
-                        request.Timeout.TotalSeconds > 0 ? 
-                            request.Timeout : 
-                            Timeout.InfiniteTimeSpan,
-                        cancellationTokenSource.Token);
-
-                    var sendTask = GetHttpClient(request).SendAsync(
-                        httpRequestMessage, 
-                        HttpCompletionOption.ResponseHeadersRead,
-                        cancellationTokenSource.Token);
-
-                    var finishedTask = await Task.WhenAny(sendTask, timeoutTask);
-
-                    cancellationTokenSource.Cancel();
-
-                    if(finishedTask == timeoutTask)
-                    {
-                        if ((services.RetryStrategy?.ShouldRetryOnTimeout ?? false) && 
-                            failRetriesRemaining > 0)
-                        {
-                            var shouldRetry = true;
-
-                            (request, requestUrl, shouldRetry) = await ApplyBeforeRetryHandlers(
-                                request.Services.BeforeRetryHandlers,
-                                request,
-                                requestUrl,
-                                0,
-                                failRetryCount);
-
-                            if(!shouldRetry)
-                            {
-                                return await ApplyAfterResponseHandlers(
-                                    services.AfterResponseHandlers,
-                                    request,
-                                    new Response(
-                                        statusCode: default,
-                                        headers: default,
-                                        content: default,
-                                        contentType: default,
-                                        contentEncoding: default,
-                                        isSuccess: false,
-                                        errorMessage: "Timed out while making request",
-                                        exception: default,
-                                        request: request,
-                                        requestedUrl: requestUrl));
-                            }
-
-                            failRetriesRemaining--;
-
-                            failRetryCount++;
-
-                            var retryInterval = services.RetryStrategy.GetRetryTimeout(failRetryCount);
-
-                            if (retryInterval.TotalSeconds > 0)
-                            {
-                                await Task.Delay(retryInterval);
-                            }
-
-                            continue;
-                        }
-                        else
-                        {
-                            return await ApplyAfterResponseHandlers(
-                                services.AfterResponseHandlers, 
-                                request, 
-                                new Response(
-                                    statusCode: default,
-                                    headers: default,
-                                    content: default,
-                                    contentType: default,
-                                    contentEncoding: default,
-                                    isSuccess: false,
-                                    errorMessage: "Timed out while making request",
-                                    exception: default,
-                                    request: request,
-                                    requestedUrl: requestUrl));
-                        }
-                    }
-                    else
-                    {
-                        httpResponseMessage = await sendTask;
-                    }
-                }
-                catch(Exception ex)
-                {
-                    return await ApplyAfterResponseHandlers(
-                        services.AfterResponseHandlers,
+                    bool shouldRetry;
+                    (request, requestUrl, shouldRetry) = await ApplyBeforeRetryHandlers(request.Services.BeforeRetryHandlers,
                         request,
-                        new Response(
-                            statusCode: default,
-                            headers: default,
-                            content: default,
-                            contentType: default,
-                            contentEncoding: default,
-                            isSuccess: false,
-                            errorMessage: ex.Message,
-                            exception: ex,
-                            request: request,
-                            requestedUrl: requestUrl));
-                }
-
-                if ((services.AuthorizationStrategy?.ShouldReauthorize(httpResponseMessage.StatusCode) ?? false) && 
-                    reauthorizeRetriesRemaining > 0)
-                {
-                    await services.AuthorizationStrategy.Reauthorize();
-
-                    reauthorizeRetriesRemaining--;
-
-                    continue;
-                }
-
-                if ((services.RetryStrategy?.ShouldRetry(httpResponseMessage.StatusCode) ?? false) && 
-                    failRetriesRemaining > 0)
-                {
-                    var shouldRetry = true;
-
-                    (request, requestUrl, shouldRetry) = await ApplyBeforeRetryHandlers(
-                        request.Services.BeforeRetryHandlers, 
-                        request, 
-                        requestUrl, 
-                        httpResponseMessage.StatusCode, 
-                        failRetryCount);
+                        requestUrl,
+                        0,
+                        retryContext.FailureRetryCount);
 
                     if (shouldRetry)
                     {
-                        failRetriesRemaining--;
-
-                        failRetryCount++;
-
-                        var retryInterval = services.RetryStrategy.GetRetryTimeout(failRetryCount);
-
-                        if (retryInterval.TotalSeconds > 0)
-                        {
-                            await Task.Delay(retryInterval);
-                        }
-
-                        continue;
+                        return (request, requestUrl, null);
                     }
                 }
-
-                var contentTypeValue = httpResponseMessage.Content.Headers
-                    .TryGetValues("Content-Type", out var values) ?
-                        values.FirstOrDefault() :
-                        null;
-
-                var responseContent = new StreamedContent(await httpResponseMessage.Content.ReadAsStreamAsync());
-
-                return await ApplyAfterResponseHandlers(
-                    services.AfterResponseHandlers,
-                    request,
-                    new Response(
-                        statusCode: httpResponseMessage.StatusCode,
-                        headers: httpResponseMessage.Headers.ToDictionary(
-                            kv => kv.Key,
-                            kv => kv.Value.First()),
-                        content: responseContent,
-                        contentType: contentTypeValue,
-                        contentEncoding: null,
-                        isSuccess: 
-                            (int)httpResponseMessage.StatusCode >= 200 &&
-                            (int)httpResponseMessage.StatusCode < 300,
-                        errorMessage: null,
-                        exception: null,
-                        request: request,
-                        requestedUrl: requestUrl));
             }
+            else if (exception != null)
+            {
+                success = false;
+                errorMessage = exception.Message;
+            }
+
+            if ((services.AuthorizationStrategy?.ShouldReauthorize(statusCode) ?? false) &&
+                retryContext.RetryAuthFailure())
+            {
+                await services.AuthorizationStrategy.Reauthorize();
+                return (request, requestUrl, null);
+            }
+
+            if ((services.RetryStrategy?.ShouldRetry(statusCode) ?? false) &&
+                retryContext.RetryFailure())
+            {
+                bool shouldRetry;
+                (request, requestUrl, shouldRetry) = await ApplyBeforeRetryHandlers(request.Services.BeforeRetryHandlers,
+                    request,
+                    requestUrl,
+                    statusCode,
+                    retryContext.FailureRetryCount);
+
+                if (shouldRetry)
+                {
+                    return (request, requestUrl, null);
+                }
+            }
+
+            if (responseMessage != null)
+            {
+                responseHeaders = responseMessage.Headers.ToDictionary(kv => kv.Key,
+                    kv => kv.Value.FirstOrDefault());
+
+                contentTypeValue = responseMessage.Content.Headers
+                    .TryGetValues("Content-Type", out var values) ?
+                    values.FirstOrDefault() :
+                    null;
+                
+                responseContent = new StreamedContent(await responseMessage.Content.ReadAsStreamAsync());
+            }
+
+            var response = await ApplyAfterResponseHandlers(services.AfterResponseHandlers,
+                request,
+                new Response(statusCode: statusCode,
+                    headers: responseHeaders,
+                    content: responseContent,
+                    contentType: contentTypeValue,
+                    // This was previously always null, should we deprecate this property?
+                    contentEncoding: default,
+                    isSuccess: success,
+                    errorMessage: errorMessage,
+                    exception: exception,
+                    request: request,
+                    requestedUrl: requestUrl));
+
+            return (request, requestUrl, response);
         }
 
         static async Task<(Request Request, string RequestUrl)> ApplyBeforeRequestHandlers(
@@ -338,5 +349,35 @@ namespace Halforbit.ApiClient
         }
 
         protected virtual HttpClient GetHttpClient(Request request) => _httpClient;
+        
+        private struct InternalResponse
+        {
+            public bool RequestTimeout { get; set; }
+            public Exception Exception { get; set; }
+            public HttpResponseMessage ResponseMessage { get; set; }
+        }
+        
+        private class RetryContext
+        {
+            private readonly int _authorizationRetries;
+            private readonly int _failureRetries;
+            
+            public RetryContext(
+                int authorizationRetries,
+                int failureRetries)
+            {
+                FailureRetryCount = 0;
+                AuthRetryCount = 0;
+                _authorizationRetries = authorizationRetries;
+                _failureRetries = failureRetries;
+            }
+
+            public int FailureRetryCount { get; private set; }
+
+            public int AuthRetryCount { get; private set; }
+
+            public bool RetryFailure() => _failureRetries - FailureRetryCount++ > 0;
+            public bool RetryAuthFailure() => _authorizationRetries - AuthRetryCount++ > 0;
+        }
     }
 }
