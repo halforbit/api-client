@@ -2,6 +2,12 @@
 
 ## Release Notes
 
+### 2023-03-02
+
+#### 1.1.5
+
+- Added option to `.Retry(...)` to specify which status codes are retryable.
+
 ### 2020-08-27
 
 #### 1.0.43

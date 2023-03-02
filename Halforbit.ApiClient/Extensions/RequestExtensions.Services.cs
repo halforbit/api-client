@@ -1,5 +1,6 @@
 ﻿using Halforbit.ApiClient.Implementation;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Threading.Tasks;
 
@@ -106,7 +107,8 @@ namespace Halforbit.ApiClient
         public static Request Retry(
             this Request request,
             int retryCount = 5,
-            bool retryOnTimeout = false)
+            bool retryOnTimeout = false,
+            IReadOnlyList<HttpStatusCode> retryableStatusCodes = null)
         {
             request = request ?? Request.Default;
 
@@ -117,7 +119,8 @@ namespace Halforbit.ApiClient
                 authorizationStrategy: services.AuthorizationStrategy,
                 retryStrategy: new ExponentialBackoffRetryStrategy(
                     retryCount,
-                    retryOnTimeout),
+                    retryOnTimeout,
+                    retryableStatusCodes),
                 requestSerializer: services.RequestSerializer,
                 responseDeserializer: services.ResponseDeserializer,
                 beforeRequestHandlers: services.BeforeRequestHandlers,

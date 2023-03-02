@@ -7,7 +7,7 @@ namespace Halforbit.ApiClient
 {
     public class ExponentialBackoffRetryStrategy : IRetryStrategy
     {
-        static readonly IReadOnlyCollection<HttpStatusCode> _retryableStatusCodes =
+        static readonly IReadOnlyCollection<HttpStatusCode> _defaultRetryableStatusCodes =
             new HashSet<HttpStatusCode>
             {
                 0,
@@ -22,14 +22,26 @@ namespace Halforbit.ApiClient
 
                 HttpStatusCode.ServiceUnavailable
             };
+        
+        static IReadOnlyCollection<HttpStatusCode> _retryableStatusCodes;
 
         public ExponentialBackoffRetryStrategy(
             int retryCount,
-            bool retryOnTimeout)
+            bool retryOnTimeout,
+            IReadOnlyList<HttpStatusCode> retryableStatusCodes = null)
         {
             RetryCount = retryCount;
 
             ShouldRetryOnTimeout = retryOnTimeout;
+
+            if (retryableStatusCodes != null)
+            {
+                _retryableStatusCodes = new HashSet<HttpStatusCode>(retryableStatusCodes);
+            }
+            else
+            {
+                _retryableStatusCodes = _defaultRetryableStatusCodes;
+            }
         }
 
         public int RetryCount { get; }
