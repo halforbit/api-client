@@ -1,10 +1,8 @@
 ﻿# Halforbit API Client
 
-An easy to use library for making requests over HTTP.
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE) &nbsp;[![Build status](https://ci.appveyor.com/api/projects/status/r96ru6eh9rk9s7n4?svg=true)](https://ci.appveyor.com/project/halforbit/api-client) &nbsp;[![Nuget Package](https://img.shields.io/nuget/v/Halforbit.ApiClient.svg)](#nuget-packages)
 
-Available on NuGet: [Halforbit.ApiClient](https://www.nuget.org/packages/Halforbit.ApiClient)
-
-[![Build status](https://ci.appveyor.com/api/projects/status/r96ru6eh9rk9s7n4?svg=true)](https://ci.appveyor.com/project/halforbit/api-client)
+Easily define and execute web requests with strong request and response types, and a simple fluent interface.
 
 ## Features
 
@@ -16,6 +14,14 @@ Available on NuGet: [Halforbit.ApiClient](https://www.nuget.org/packages/Halforb
 - Dependency injection and unit testing friendly
 - Cross platform (.NET Standard 2.0) compatability
 
+## Getting Started
+
+Install the `Halforbit.ApiClient` NuGet package:
+
+```powershell
+Install-Package Halforbit.ApiClient
+```
+   
 ## Simple Examples
 
 ```csharp
@@ -288,3 +294,14 @@ Some features that are planned for implementation:
 - Support multipart requests.
 - More robust support for e.g. `Accept`, `Accept-Charset`, `Range`, `206 Partial Content`, `X-Content-Type-Options`.
 - Follow redirects, allow distinction of requested vs redirected url
+
+<a name="nuget-packages"></a>
+## NuGet Packages
+
+The following NuGet package is provided:
+
+[`Halforbit.ApiClient`](https://www.nuget.org/packages/Halforbit.ApiClient)
+
+## License 
+
+Data Stores is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
