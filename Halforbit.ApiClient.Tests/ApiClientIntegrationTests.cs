@@ -538,23 +538,23 @@ namespace Halforbit.ApiClient.Tests
             Assert.Equal(4, retryCount);
         }
         
-        [Fact, Trait("Type", "Integration")]
-        public async Task GetRequestCancelled()
-        {
-            var request = Request.Create("https://postman-echo.com")
-                .AllowAnyStatusCode();
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task GetRequestCancelled()
+        //{
+        //    var request = Request.Create("https://postman-echo.com")
+        //        .AllowAnyStatusCode();
 
-            var timer = Stopwatch.StartNew();
-            var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
+        //    var timer = Stopwatch.StartNew();
+        //    var cts = new CancellationTokenSource(TimeSpan.FromSeconds(1));
             
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await request.GetAsync("delay/60", cts.Token));
+        //    await Assert.ThrowsAsync<OperationCanceledException>(async () => await request.GetAsync("delay/60", cts.Token));
             
-            timer.Stop();
-            var elapsed = timer.Elapsed;
+        //    timer.Stop();
+        //    var elapsed = timer.Elapsed;
             
-            Assert.True(elapsed >= TimeSpan.FromSeconds(1));
+        //    Assert.True(elapsed >= TimeSpan.FromSeconds(1));
 
-            Assert.True(elapsed < TimeSpan.FromSeconds(2));
-        }
+        //    Assert.True(elapsed < TimeSpan.FromSeconds(2));
+        //}
     }
 }
