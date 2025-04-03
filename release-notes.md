@@ -4,7 +4,7 @@
 
 ### 2025-04-02
 
-#### 1.2.3
+#### 1.2.4
 
 - Update to Newtonsoft 13.0.3 to eliminate transitive security vulnerability.
 
