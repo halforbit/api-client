@@ -1,4 +1,3 @@
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
@@ -372,7 +371,7 @@ namespace Halforbit.ApiClient.Tests
                 request.ContentType.Value);
 
             Assert.Equal(
-                _utf8Encoding.GetBytes(JsonConvert.SerializeObject(body)),
+                _utf8Encoding.GetBytes(System.Text.Json.JsonSerializer.Serialize(body)),
                 ReadFully(request.Content.GetStream()));
         }
 

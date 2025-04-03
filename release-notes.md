@@ -4,9 +4,15 @@
 
 ### 2025-04-02
 
+#### 2.0.0
+
+- Remove `Newtonsoft.Json` and use `System.Text.Json` for default serialization instead.
+
+- Remove support for < .NET 8
+
 #### 1.2.4
 
-- Update to Newtonsoft 13.0.3 to eliminate transitive security vulnerability.
+- Update to `Newtonsoft.Json` 13.0.3 to eliminate transitive security vulnerability.
 
 ### 2023-03-02
 

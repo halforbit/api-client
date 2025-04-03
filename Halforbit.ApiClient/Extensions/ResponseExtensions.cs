@@ -1,9 +1,9 @@
-﻿using Newtonsoft.Json.Linq;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Nodes;
 
 namespace Halforbit.ApiClient
 {
@@ -143,10 +143,10 @@ namespace Halforbit.ApiClient
 
         public static TResult MapContent<TResult>(
             this Response response,
-            Func<JToken, TResult> map)
+            Func<JsonNode, TResult> map)
         {
             var content = !response.Request.DefaultContentStatusCodes.Contains(response.StatusCode) ?
-                response.Content<JToken>() : 
+                response.Content<JsonNode>() :
                 null;
 
             return map(content);
@@ -154,14 +154,14 @@ namespace Halforbit.ApiClient
 
         public static IReadOnlyList<TResult> MapContentArray<TResult>(
             this Response response,
-            Func<JToken, TResult> map)
+            Func<JsonNode, TResult> map)
         {
             if (response.Request.DefaultContentStatusCodes.Contains(response.StatusCode))
             {
-                return new TResult[0];
+                return [];
             }
 
-            return response.Content<JArray>().Select(t => map(t)).ToList();
+            return response.Content<JsonArray>().Select(t => map(t)).ToList();
         }
     }
 }
