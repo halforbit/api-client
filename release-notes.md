@@ -2,6 +2,12 @@
 
 ## Release Notes
 
+### 2025-04-02
+
+#### 1.2.0
+
+- Update to Newtonsoft 13.0.3 to eliminate transitive security vulnerability.
+
 ### 2023-03-02
 
 #### 1.1.5
