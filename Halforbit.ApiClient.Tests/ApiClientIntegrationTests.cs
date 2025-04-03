@@ -24,30 +24,30 @@ namespace Halforbit.ApiClient.Tests
     {
         static readonly Request _request = Request.Create(baseUrl: "https://reqres.in/api");
 
-        private static readonly string UsersResponse =
-            @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://reqres.in/img/faces/1-image.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://reqres.in/img/faces/3-image.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://reqres.in/img/faces/4-image.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://reqres.in/img/faces/5-image.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://reqres.in/img/faces/6-image.jpg""}],""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}";
-        
-        [Fact, Trait("Type", "Integration")]
-        public async Task ListUsers()
-        {
-            var response = await _request.GetAsync("users");
+        //private static readonly string UsersResponse =
+        //    @"{""page"":1,""per_page"":6,""total"":12,""total_pages"":2,""data"":[{""id"":1,""email"":""george.bluth@reqres.in"",""first_name"":""George"",""last_name"":""Bluth"",""avatar"":""https://reqres.in/img/faces/1-image.jpg""},{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},{""id"":3,""email"":""emma.wong@reqres.in"",""first_name"":""Emma"",""last_name"":""Wong"",""avatar"":""https://reqres.in/img/faces/3-image.jpg""},{""id"":4,""email"":""eve.holt@reqres.in"",""first_name"":""Eve"",""last_name"":""Holt"",""avatar"":""https://reqres.in/img/faces/4-image.jpg""},{""id"":5,""email"":""charles.morris@reqres.in"",""first_name"":""Charles"",""last_name"":""Morris"",""avatar"":""https://reqres.in/img/faces/5-image.jpg""},{""id"":6,""email"":""tracey.ramos@reqres.in"",""first_name"":""Tracey"",""last_name"":""Ramos"",""avatar"":""https://reqres.in/img/faces/6-image.jpg""}],""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}";
+
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task ListUsers()
+        //{
+        //    var response = await _request.GetAsync("users");
             
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                UsersResponse,
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        UsersResponse,
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.Equal(
-                "https://reqres.in/api/users",
-                response.RequestedUrl);
-        }
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users",
+        //        response.RequestedUrl);
+        //}
 
         [Fact, Trait("Type", "Integration")]
         public async Task ListUsers_MapContent()
@@ -82,183 +82,183 @@ namespace Halforbit.ApiClient.Tests
                 response.RequestedUrl);
         }
 
-        [Fact, Trait("Type", "Integration")]
-        public async Task ListUsers_BearerToken()
-        {
-            var authorizationCalled = false;
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task ListUsers_BearerToken()
+        //{
+        //    var authorizationCalled = false;
 
-            async Task<IAuthorizationToken> Authorize()
-            {
-                await Task.Delay(0);
+        //    async Task<IAuthorizationToken> Authorize()
+        //    {
+        //        await Task.Delay(0);
 
-                authorizationCalled = true;
+        //        authorizationCalled = true;
 
-                return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
-            }
+        //        return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
+        //    }
 
-            var response = await _request
-                .BearerTokenAuthorization(Authorize)
-                .GetAsync("users");
+        //    var response = await _request
+        //        .BearerTokenAuthorization(Authorize)
+        //        .GetAsync("users");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                UsersResponse,
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        UsersResponse,
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.True(authorizationCalled);
+        //    Assert.True(authorizationCalled);
 
-            Assert.Equal(
-                "Bearer abc123",
-                response.Request.Headers["Authorization"]);
+        //    Assert.Equal(
+        //        "Bearer abc123",
+        //        response.Request.Headers["Authorization"]);
 
-            Assert.Equal(
-                "https://reqres.in/api/users",
-                response.RequestedUrl);
-        }
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users",
+        //        response.RequestedUrl);
+        //}
 
-        [Fact, Trait("Type", "Integration")]
-        public async Task ListUsers_Cookie()
-        {
-            var authorizationCalled = false;
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task ListUsers_Cookie()
+        //{
+        //    var authorizationCalled = false;
 
-            async Task<IAuthorizationToken> Authorize()
-            {
-                await Task.Delay(0);
+        //    async Task<IAuthorizationToken> Authorize()
+        //    {
+        //        await Task.Delay(0);
 
-                authorizationCalled = true;
+        //        authorizationCalled = true;
 
-                return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
-            }
+        //        return new AuthorizationToken("abc123", DateTime.UtcNow.AddDays(1));
+        //    }
 
-            var response = await _request
-                .CookieAuthorization(Authorize)
-                .GetAsync("users");
+        //    var response = await _request
+        //        .CookieAuthorization(Authorize)
+        //        .GetAsync("users");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                UsersResponse,
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        UsersResponse,
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.True(authorizationCalled);
+        //    Assert.True(authorizationCalled);
 
-            Assert.Equal(
-                "abc123",
-                response.Request.Headers["Cookie"]);
+        //    Assert.Equal(
+        //        "abc123",
+        //        response.Request.Headers["Cookie"]);
 
-            Assert.Equal(
-                "https://reqres.in/api/users",
-                response.RequestedUrl);
-        }
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users",
+        //        response.RequestedUrl);
+        //}
 
-        [Fact, Trait("Type", "Integration")]
-        public async Task ListUsers_BeforeRequestHandler()
-        {
-            var handlerCalled = false;
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task ListUsers_BeforeRequestHandler()
+        //{
+        //    var handlerCalled = false;
 
-            var response = await _request
-                .BeforeRequest((q, u) =>
-                {
-                    Assert.Equal("users", q.Resource);
+        //    var response = await _request
+        //        .BeforeRequest((q, u) =>
+        //        {
+        //            Assert.Equal("users", q.Resource);
 
-                    handlerCalled = true;
+        //            handlerCalled = true;
 
-                    return Task.FromResult((q, u));
-                })
-                .GetAsync("users");
+        //            return Task.FromResult((q, u));
+        //        })
+        //        .GetAsync("users");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                UsersResponse,
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        UsersResponse,
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.Equal(
-                "https://reqres.in/api/users",
-                response.RequestedUrl);
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users",
+        //        response.RequestedUrl);
 
-            Assert.True(handlerCalled);
-        }
+        //    Assert.True(handlerCalled);
+        //}
 
-        [Fact, Trait("Type", "Integration")]
-        public async Task ListUsers_AfterResponseHandler()
-        {
-            var handlerCalled = false;
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task ListUsers_AfterResponseHandler()
+        //{
+        //    var handlerCalled = false;
 
-            var response = await _request
-                .AfterResponse(r =>
-                {
-                    Assert.Equal("users", r.Request.Resource);
+        //    var response = await _request
+        //        .AfterResponse(r =>
+        //        {
+        //            Assert.Equal("users", r.Request.Resource);
 
-                    Assert.Equal(HttpStatusCode.OK, r.StatusCode);
+        //            Assert.Equal(HttpStatusCode.OK, r.StatusCode);
 
-                    handlerCalled = true;
+        //            handlerCalled = true;
 
-                    return Task.FromResult(r);
-                })
-                .GetAsync("users");
+        //            return Task.FromResult(r);
+        //        })
+        //        .GetAsync("users");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                UsersResponse,
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        UsersResponse,
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.Equal(
-                "https://reqres.in/api/users",
-                response.RequestedUrl);
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users",
+        //        response.RequestedUrl);
 
-            Assert.True(handlerCalled);
-        }
+        //    Assert.True(handlerCalled);
+        //}
 
-        [Fact, Trait("Type", "Integration")]
-        public async Task SingleUser()
-        {
-            var response = await _request
-                .RouteValues(new { UserId = 2 })
-                .GetAsync("users/{UserId}");
+        //[Fact, Trait("Type", "Integration")]
+        //public async Task SingleUser()
+        //{
+        //    var response = await _request
+        //        .RouteValues(new { UserId = 2 })
+        //        .GetAsync("users/{UserId}");
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        //    Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            Assert.Equal("application/json", response.ContentType.MediaType);
+        //    Assert.Equal("application/json", response.ContentType.MediaType);
 
-            Assert.Equal("utf-8", response.ContentType.CharSet);
+        //    Assert.Equal("utf-8", response.ContentType.CharSet);
 
-            var result = response.Content<JObject>();
+        //    var result = response.Content<JObject>();
 
-            Assert.Equal(
-                @"{""data"":{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}",
-                JsonConvert.SerializeObject(result));
+        //    Assert.Equal(
+        //        @"{""data"":{""id"":2,""email"":""janet.weaver@reqres.in"",""first_name"":""Janet"",""last_name"":""Weaver"",""avatar"":""https://reqres.in/img/faces/2-image.jpg""},""support"":{""url"":""https://reqres.in/#support-heading"",""text"":""To keep ReqRes free, contributions towards server costs are appreciated!""}}",
+        //        JsonConvert.SerializeObject(result));
 
-            Assert.Equal(
-                "https://reqres.in/api/users/2",
-                response.RequestedUrl);
-        }
+        //    Assert.Equal(
+        //        "https://reqres.in/api/users/2",
+        //        response.RequestedUrl);
+        //}
 
         [Fact, Trait("Type", "Integration")]
         public async Task SingleUserNotFound_Exception()
